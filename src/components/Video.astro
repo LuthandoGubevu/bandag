@@ -1,0 +1,28 @@
+---
+// Click-to-load YouTube embed: nothing is fetched from YouTube until the visitor
+// asks for the video, so it costs nothing on a weak connection.
+interface Props { id: string; title: string }
+const { id, title } = Astro.props;
+---
+
+{
+  id && (
+    <div class="photo" style="aspect-ratio:16 / 9" data-video={id} data-title={title}>
+      <button class="btn btn--yellow" type="button" style="position:absolute;left:16px;bottom:16px">Play video: {title}</button>
+    </div>
+  )
+}
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-video]').forEach((box) => {
+    box.querySelector('button')?.addEventListener('click', () => {
+      const frame = document.createElement('iframe');
+      frame.src = `https://www.youtube-nocookie.com/embed/${box.dataset.video}?autoplay=1`;
+      frame.title = box.dataset.title || 'Video';
+      frame.allow = 'autoplay; encrypted-media; picture-in-picture';
+      frame.allowFullscreen = true;
+      frame.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;border:0';
+      box.replaceChildren(frame);
+    });
+  });
+</script>

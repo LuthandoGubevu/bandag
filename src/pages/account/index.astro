@@ -1,0 +1,118 @@
+---
+import Base from '../../layouts/Base.astro';
+import { site } from '../../data/site';
+
+// PHASE 3 PREVIEW. Everything on this page is sample data that shows how the
+// fleet account will look and behave. It is excluded from search engines and
+// the sitemap. See docs/04-phased-rollout.md.
+const stages = [
+  { label: 'Received', count: 6, state: 'is-active' },
+  { label: 'Inspected', count: 4, state: 'is-active' },
+  { label: 'Retreading', count: 8, state: 'is-active' },
+  { label: 'Ready', count: 12, state: 'is-ready' },
+  { label: 'Delivered', count: 31, state: '' },
+];
+const casings = [
+  { id: 'C-20418', size: '315/80R22.5', tread: 'BDR-HT2', stage: 'Ready' },
+  { id: 'C-20419', size: '315/80R22.5', tread: 'BDR-HT2', stage: 'Ready' },
+  { id: 'C-20433', size: '385/65R22.5', tread: 'BTR-SA', stage: 'Retreading' },
+  { id: 'C-20441', size: '385/65R22.5', tread: 'BTR-SA', stage: 'Inspected' },
+  { id: 'C-20447', size: '12R22.5', tread: 'Rejected: sidewall cut', stage: 'Returned' },
+  { id: 'C-20452', size: '315/80R22.5', tread: 'To be confirmed', stage: 'Received' },
+];
+const orders = [
+  { ref: 'Retread batch 1042', detail: '12 tyres · BDR-HT2, BTR-SA', status: 'Ready for delivery', tone: 'var(--success)' },
+  { ref: 'Repair job 218', detail: '3 tyres · section repairs', status: 'In progress', tone: 'var(--link)' },
+  { ref: 'Retread batch 1038', detail: '18 tyres · BDR-HT2', status: 'Delivered', tone: 'var(--text-2)' },
+];
+const docs = ['Full Retread Life Warranty certificate', 'SANS 20109 certificate of compliance', 'Latest invoice', 'Latest statement', 'Fleet owner health and safety guide'];
+---
+
+<Base title="Fleet account" description="Casing tracking, collection schedule, orders and documents for East London Bandag fleet customers." noindex>
+  <section class="section">
+    <div class="wrap stack stack--lg">
+      <p class="notice"><b>Preview with sample data.</b> This shows what the fleet account will do. To have an account set up for your fleet, <a href="/contact/?about=Fleet%20programme#quote">ask us</a>. Until then we send the same information by WhatsApp or phone.</p>
+
+      <div class="row" style="justify-content:space-between;align-items:flex-end">
+        <div>
+          <p class="eyebrow">Fleet account</p>
+          <h1 class="h2">Sample Transport (Pty) Ltd</h1>
+        </div>
+        <a class="btn btn--secondary" href="/contact/">Contact your account manager</a>
+      </div>
+
+      <div class="grid-2">
+        <div class="status status--good">
+          <p class="status__label">Batch ready</p>
+          <p class="h3">12 retreads ready for delivery</p>
+          <p>They go out on your next scheduled run. We have sent a WhatsApp to the number on the account.</p>
+        </div>
+        <div class="card card--pad">
+          <p class="eyebrow">Collection and delivery schedule</p>
+          <ul class="stack stack--sm">
+            <li><b>Next run to your depot:</b> Tuesday</li>
+            <li>Delivering batch 1042 (12 tyres)</li>
+            <li>Collecting: nothing booked yet</li>
+          </ul>
+          <a class="btn" href="/collection/">Book casings onto this run</a>
+        </div>
+      </div>
+
+      <div class="card card--pad">
+        <h2 class="h3">Casing tracking</h2>
+        <p class="muted small">Every casing is logged when it arrives and moves through these stages. Maximum one week from pickup to delivery.</p>
+        <ol class="pipeline">
+          {stages.map((s) => <li class={s.state}><b>{s.count}</b><span>{s.label}</span></li>)}
+        </ol>
+        <div class="table-scroll">
+          <table>
+            <caption class="visually-hidden">Casings currently in the plant</caption>
+            <thead><tr><th scope="col">Casing</th><th scope="col">Size</th><th scope="col">Tread</th><th scope="col">Stage</th></tr></thead>
+            <tbody>
+              {casings.map((c) => <tr><th scope="row">{c.id}</th><td>{c.size}</td><td>{c.tread}</td><td><b>{c.stage}</b></td></tr>)}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card card--pad">
+          <h2 class="h3">Orders and repairs</h2>
+          <ul class="stack">
+            {
+              orders.map((o) => (
+                <li style="border-top:1px solid var(--line);padding-top:12px">
+                  <b>{o.ref}</b><br />
+                  <span class="muted small">{o.detail}</span><br />
+                  <b class="small" style={`color:${o.tone}`}>{o.status}</b>
+                </li>
+              ))
+            }
+          </ul>
+          <a class="btn" href="/contact/?about=Retread%20quote&details=Reorder%3A%20same%20again%20as%20batch%201038#quote">Reorder batch 1038</a>
+        </div>
+        <div class="card card--pad">
+          <h2 class="h3">Documents</h2>
+          <ul class="stack stack--sm">
+            {docs.map((d) => <li><a class="resource" href="/resources/" style="min-height:56px"><span class="resource__type" aria-hidden="true" style="height:40px">PDF</span><span class="resource__main"><span class="resource__title" style="font-size:1rem">{d}</span></span></a></li>)}
+          </ul>
+        </div>
+      </div>
+
+      <form class="card card--pad" onsubmit="return false">
+        <h2 class="h3">Tell me when a batch is ready</h2>
+        <div class="grid-2">
+          <label class="option"><input type="radio" name="notify" checked /> WhatsApp</label>
+          <label class="option"><input type="radio" name="notify" /> SMS</label>
+        </div>
+        <div class="field">
+          <label class="label" for="acc-phone">Cell number for notifications</label>
+          <input class="input" id="acc-phone" type="tel" inputmode="tel" value="082 000 0000" />
+        </div>
+        <p class="hint">Sample only: nothing is saved or sent from this preview.</p>
+      </form>
+
+      <p class="small muted">Something standing? Breakdown line <a href={site.roadside.href}>{site.roadside.display}</a>, 24 hours.</p>
+    </div>
+  </section>
+</Base>

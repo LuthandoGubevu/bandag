@@ -1,0 +1,24 @@
+---
+import { certifications } from '../data/site';
+interface Props { explain?: boolean }
+const { explain = false } = Astro.props;
+---
+
+<ul class="grid-2">
+  {
+    certifications.map((c) => (
+      <li class="cert">
+        <span class="cert__mark" aria-hidden="true">{c.mark}</span>
+        <div>
+          <h3 class="cert__title">{c.title}</h3>
+          <p class="cert__text">{c.text}</p>
+          {explain && (
+            <p class="cert__meaning">
+              <b>What it means for you:</b> {c.meaning}
+            </p>
+          )}
+        </div>
+      </li>
+    ))
+  }
+</ul>

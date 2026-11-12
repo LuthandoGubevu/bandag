@@ -1,0 +1,20 @@
+---
+import Base from '../../layouts/Base.astro';
+import { site } from '../../data/site';
+---
+
+<Base title="Thank you" description="Your message has been received." noindex>
+  <section class="section">
+    <div class="wrap wrap--narrow stack stack--lg">
+      <div class="status status--good" role="status">
+        <p class="status__label">Received</p>
+        <h1 class="h2">Thank you. We have your details.</h1>
+      </div>
+      <p class="lede">We reply during office hours, usually the same day. If a vehicle is standing, do not wait for us: call the 24-hour breakdown line on <a href={site.roadside.href}><b>{site.roadside.display}</b></a>.</p>
+      <div class="row">
+        <a class="btn" href="/">Back to the home page</a>
+        <a class="btn btn--secondary" href="/retreads/">Browse the tread range</a>
+      </div>
+    </div>
+  </section>
+</Base>

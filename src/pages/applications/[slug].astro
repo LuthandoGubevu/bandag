@@ -1,0 +1,9 @@
+---
+import LandingPage from '../../components/LandingPage.astro';
+import { applications } from '../../data/landings';
+export function getStaticPaths() {
+  return applications.map((p) => ({ params: { slug: p.slug }, props: { page: p } }));
+}
+---
+
+<LandingPage page={Astro.props.page} kind="application" />

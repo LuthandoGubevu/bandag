@@ -1,0 +1,264 @@
+---
+import '@fontsource/barlow/latin-500.css';
+import '@fontsource/barlow/latin-700.css';
+import '../styles/global.css';
+import { site, nav, footerLinks, waLink } from '../data/site';
+import { applications, areas } from '../data/landings';
+
+interface Props {
+  title: string;
+  description: string;
+  active?: string;
+  noindex?: boolean;
+  jsonld?: object | object[];
+}
+const { title, description, active, noindex = false, jsonld } = Astro.props;
+
+const canonical = new URL(Astro.url.pathname, site.url).href;
+const fullTitle = Astro.url.pathname === '/' ? `${title} | ${site.name}` : `${title} | ${site.name}`;
+
+const business = {
+  '@context': 'https://schema.org',
+  '@type': ['TireShop', 'LocalBusiness'],
+  '@id': `${site.url}/#business`,
+  name: site.name,
+  alternateName: site.altName,
+  url: site.url,
+  description: 'Bandag retread manufacturer and commercial tyre supplier in East London, Eastern Cape: truck and bus retreads, new tyres, vulcanised repairs and 24-hour roadside tyre assistance.',
+  telephone: site.tel.intl,
+  faxNumber: '+27865159796',
+  email: site.email,
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: site.address.street,
+    addressLocality: site.address.city,
+    addressRegion: site.address.region,
+    postalCode: site.address.postalCode,
+    addressCountry: site.address.countryCode,
+  },
+  geo: { '@type': 'GeoCoordinates', latitude: site.geo.lat, longitude: site.geo.lng },
+  areaServed: { '@type': 'AdministrativeArea', name: 'Eastern Cape' },
+  brand: site.brands.map((b) => ({ '@type': 'Brand', name: b.name })),
+  openingHoursSpecification: site.hours.map((h) => ({
+    '@type': 'OpeningHoursSpecification',
+    dayOfWeek: h.days.map((d) => ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][d]),
+    opens: h.open,
+    closes: h.close,
+  })),
+  contactPoint: [
+    { '@type': 'ContactPoint', telephone: site.roadside.intl, contactType: 'emergency', description: '24-hour truck tyre roadside assistance', hoursAvailable: 'Mo-Su 00:00-23:59' },
+    { '@type': 'ContactPoint', telephone: site.tel.intl, contactType: 'sales' },
+  ],
+};
+const graphs = [business, ...(jsonld ? (Array.isArray(jsonld) ? jsonld : [jsonld]) : [])];
+const hoursText = site.hours.map((h) => `${h.label} ${h.open} to ${h.close}`).join(', ');
+---
+
+<!doctype html>
+<html lang="en-ZA">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    {noindex && <meta name="robots" content="noindex, nofollow" />}
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={site.name} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:locale" content="en_ZA" />
+    <meta name="theme-color" content="#FFC20E" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <script is:inline>
+      // Set the theme before first paint so there is no flash.
+      (function () {
+        var d = document.documentElement;
+        d.classList.add('js');
+        try {
+          var t = localStorage.getItem('elb-theme');
+          if (t === 'light' || t === 'dark') d.setAttribute('data-theme', t);
+        } catch (e) {}
+      })();
+    </script>
+    {graphs.map((g) => <script type="application/ld+json" set:html={JSON.stringify(g)} />)}
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+
+    <!-- Emergency bar: the most important element on the site. Sticky, on every page. -->
+    <div class="ebar" role="region" aria-label="24-hour breakdown assistance">
+      <div class="ebar__inner">
+        <span class="ebar__label">24-hour truck tyre breakdown</span>
+        <a class="ebar__call" href={site.roadside.href}>
+          <small>24-hr breakdown, call</small>
+          <b><span class="visually-hidden">Call roadside assistance on </span>{site.roadside.display}</b>
+        </a>
+        <a class="ebar__wa" href={waLink('Breakdown. My location and tyre size:')}>WhatsApp your location</a>
+        <a class="ebar__eta" href={site.eta.href}>
+          <small>ETA national line</small>
+          <b>{site.eta.display}</b>
+        </a>
+      </div>
+    </div>
+
+    <header class="site-header">
+      <div class="site-header__inner">
+        <a class="logo" href="/" aria-label={`${site.name}, home`}>
+          <span class="logo__place">EAST LONDON</span>
+          <span class="logo__brand">bandag</span>
+        </a>
+        <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="site-nav">Menu</button>
+        <nav class="site-nav" id="site-nav" aria-label="Main">
+          <ul class="site-nav__list">
+            {
+              nav.map((n) => (
+                <li>
+                  <a href={n.href} aria-current={active === n.key ? 'page' : undefined}>
+                    {n.label}
+                  </a>
+                </li>
+              ))
+            }
+          </ul>
+          <div class="site-nav__actions">
+            <a class="textlink" href="/account/">Fleet account</a>
+            <a class="btn" href="/contact/#quote">Request a quote</a>
+          </div>
+        </nav>
+      </div>
+      <div class="subbar">
+        <div class="subbar__inner">
+          <span class="open-status" data-open-status data-hours={JSON.stringify(site.hours)}>Office hours: {hoursText}</span>
+          <span class="row" style="gap:4px 20px">
+            <a href={site.tel.href}>Office {site.tel.display}</a>
+            <a href={waLink('Hello, I would like a quote.')}>WhatsApp us</a>
+          </span>
+        </div>
+      </div>
+    </header>
+
+    <main id="main">
+      <slot />
+    </main>
+
+    <footer class="site-footer">
+      <div class="wrap site-footer__grid">
+        <div class="stack">
+          <h2>{site.name}</h2>
+          <address style="font-style:normal">
+            {site.address.street}<br />
+            {site.address.city}, {site.address.region}, {site.address.postalCode}<br />
+            {site.address.country}
+          </address>
+          <p>
+            Tel <a href={site.tel.href}><b>{site.tel.display}</b></a><br />
+            Fax {site.fax}<br />
+            <a href={`mailto:${site.email}`}>{site.email}</a>
+          </p>
+          <p class="small">{hoursText}. Roadside assistance 24 hours.</p>
+          <div class="row">
+            <a class="btn btn--yellow" href={site.tel.href}>Call the office</a>
+            <a class="btn btn--on-dark" href={waLink('Hello, I would like a quote.')}>WhatsApp us</a>
+          </div>
+        </div>
+        <nav aria-label="Footer">
+          <h2>Explore</h2>
+          <ul class="site-footer__links">
+            {nav.map((l) => <li><a href={l.href}>{l.label}</a></li>)}
+            {footerLinks.map((l) => <li><a href={l.href}>{l.label}</a></li>)}
+          </ul>
+        </nav>
+        <nav aria-label="Applications and areas">
+          <h2>By application</h2>
+          <ul class="site-footer__links">
+            {applications.map((l) => <li><a href={`/applications/${l.slug}/`}>{l.eyebrow}</a></li>)}
+          </ul>
+          <h2 style="margin-top:24px">By area</h2>
+          <ul class="site-footer__links">
+            {areas.map((l) => <li><a href={`/areas/${l.slug}/`}>{l.eyebrow}</a></li>)}
+          </ul>
+        </nav>
+        <div>
+          <h2>Technical updates</h2>
+          <form class="form" name="updates" method="POST" action="/thanks/" data-netlify="true" netlify-honeypot="bot-field">
+            <input type="hidden" name="form-name" value="updates" />
+            <p hidden><label>Leave this empty <input name="bot-field" /></label></p>
+            <div class="field">
+              <label class="label" for="updates-email">Tyre and retread advice by email, only when we have something useful</label>
+              <input class="input" id="updates-email" name="email" type="email" autocomplete="email" placeholder="you@yourfleet.co.za" required />
+            </div>
+            <label class="check" for="updates-consent">
+              <input type="checkbox" id="updates-consent" name="consent" value="yes" required />
+              <span>I agree that East London Bandag may email me technical updates, as set out in the <a href="/privacy/">privacy notice</a>. I can unsubscribe at any time.</span>
+            </label>
+            <button class="btn btn--yellow" type="submit" style="align-self:flex-start">Subscribe to updates</button>
+          </form>
+        </div>
+      </div>
+      <div class="wrap site-footer__base">
+        <span>Independent Bandag retread franchise. Supplier brands: {site.brands.map((b) => b.name).join(', ')}.</span>
+        <button class="theme-toggle" type="button" data-theme-toggle>Switch theme</button>
+      </div>
+    </footer>
+
+    <script>
+      const root = document.documentElement;
+
+      // Mobile menu
+      const toggle = document.querySelector<HTMLButtonElement>('.menu-toggle');
+      const menu = document.getElementById('site-nav');
+      toggle?.addEventListener('click', () => {
+        const open = menu!.classList.toggle('is-open');
+        toggle.setAttribute('aria-expanded', String(open));
+        toggle.textContent = open ? 'Close' : 'Menu';
+      });
+
+      // Theme toggle: follows the device until the visitor chooses.
+      const themeBtn = document.querySelector<HTMLButtonElement>('[data-theme-toggle]');
+      const isDark = () => (root.dataset.theme ? root.dataset.theme === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches);
+      const label = () => themeBtn && (themeBtn.textContent = isDark() ? 'Switch to light mode' : 'Switch to dark mode');
+      label();
+      themeBtn?.addEventListener('click', () => {
+        const next = isDark() ? 'light' : 'dark';
+        root.dataset.theme = next;
+        try {
+          localStorage.setItem('elb-theme', next);
+        } catch {}
+        label();
+      });
+
+      // Open or closed right now, in South African time wherever the visitor is.
+      document.querySelectorAll<HTMLElement>('[data-open-status]').forEach((el) => {
+        try {
+          const hours = JSON.parse(el.dataset.hours || '[]') as { days: number[]; open: string; close: string }[];
+          const parts = new Intl.DateTimeFormat('en-GB', { timeZone: 'Africa/Johannesburg', weekday: 'short', hour: '2-digit', minute: '2-digit', hour12: false }).formatToParts(new Date());
+          const get = (t: string) => parts.find((p) => p.type === t)!.value;
+          const day = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].indexOf(get('weekday'));
+          const now = `${get('hour')}:${get('minute')}`;
+          const today = hours.find((h) => h.days.includes(day));
+          const names = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+          if (today && now >= today.open && now < today.close) {
+            el.dataset.state = 'open';
+            el.textContent = `Office open now, closes ${today.close}`;
+          } else {
+            let text = 'Office closed';
+            if (today && now < today.open) text += `, opens ${today.open}`;
+            else
+              for (let i = 1; i <= 7; i++) {
+                const next = hours.find((h) => h.days.includes((day + i) % 7));
+                if (next) {
+                  text += `, opens ${i === 1 ? 'tomorrow' : names[(day + i) % 7]} ${next.open}`;
+                  break;
+                }
+              }
+            el.dataset.state = 'closed';
+            el.textContent = text;
+          }
+        } catch {}
+      });
+    </script>
+  </body>
+</html>

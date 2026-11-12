@@ -1,0 +1,23 @@
+---
+import { site, waLink } from '../data/site';
+interface Props { heading?: string; level?: 'h1' | 'h2' }
+const { heading = 'Truck down right now?', level: H = 'h2' } = Astro.props;
+---
+
+<section class="section section--yellow" id="breakdown">
+  <div class="wrap wrap--narrow stack">
+    <p class="eyebrow">24-hour truck tyre roadside assistance</p>
+    <H class="h1">{heading}</H>
+    <a class="btn btn--ink btn--lg btn--block" href={site.roadside.href}>Call {site.roadside.display}</a>
+    <a class="btn btn--on-yellow btn--block" href={waLink('Breakdown. My location and tyre size:')}>Send your location on WhatsApp</a>
+    <ol class="numbered">
+      <li>Pull off safely and switch on your hazards.</li>
+      <li>Tell us where you are, the tyre size and the wheel position.</li>
+      <li>We send a service vehicle to you.</li>
+    </ol>
+    <p>
+      Outside the Eastern Cape? Call the ETA Bandag national breakdown line on
+      <a href={site.eta.href} style="color:inherit"><b>{site.eta.display}</b></a>, toll free.
+    </p>
+  </div>
+</section>

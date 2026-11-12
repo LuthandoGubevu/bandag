@@ -1,0 +1,36 @@
+---
+import Base from '../../layouts/Base.astro';
+import { site } from '../../data/site';
+---
+
+<Base title="Privacy notice (POPIA)" description="How East London Bandag collects, uses and protects personal information under the Protection of Personal Information Act.">
+  <section class="section">
+    <div class="wrap wrap--narrow stack stack--lg">
+      <h1>Privacy notice</h1>
+      <p class="lede">This notice explains how {site.name} handles personal information under the Protection of Personal Information Act 4 of 2013 (POPIA).</p>
+      <div class="prose">
+        <h2>Who is responsible</h2>
+        <p>{site.name}, {site.address.street}, {site.address.city}, {site.address.postalCode}. Our Information Officer is [NAME OF INFORMATION OFFICER], who can be reached at <a href={`mailto:${site.email}`}>{site.email}</a> or {site.tel.display}.</p>
+        <h2>What we collect</h2>
+        <p>Only what you give us in a form, by phone or by message: your name, company, phone number, email address, site address and the details of your enquiry, collection or order.</p>
+        <h2>Why we use it</h2>
+        <ul>
+          <li>To answer your enquiry or quote request</li>
+          <li>To arrange collections, deliveries and breakdown assistance</li>
+          <li>To manage your fleet account and notify you when a batch is ready</li>
+          <li>To send technical updates by email, only if you asked for them</li>
+        </ul>
+        <h2>Consent</h2>
+        <p>Every form on this site asks for your consent before it is sent, and says what the information will be used for. You can withdraw consent at any time by contacting us, and every email update carries an unsubscribe link.</p>
+        <h2>Who sees it</h2>
+        <p>Our own staff, and service providers who process it on our behalf under contract, such as our website form and email providers. We do not sell personal information or pass it to third parties for marketing.</p>
+        <h2>How long we keep it</h2>
+        <p>Enquiries are kept for as long as needed to deal with them. Account and transaction records are kept for the periods the law requires.</p>
+        <h2>Your rights</h2>
+        <p>You may ask to see the personal information we hold about you, to have it corrected or deleted, and to object to its use. If you are not satisfied with our response you may complain to the Information Regulator of South Africa.</p>
+        <h2>Cookies</h2>
+        <p>This site stores one preference on your device: whether you chose light or dark mode. It does not use advertising or tracking cookies.</p>
+      </div>
+    </div>
+  </section>
+</Base>

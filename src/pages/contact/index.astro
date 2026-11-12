@@ -1,0 +1,103 @@
+---
+import Base from '../../layouts/Base.astro';
+import Emergency from '../../components/Emergency.astro';
+import Consent from '../../components/Consent.astro';
+import { site, waLink } from '../../data/site';
+const hoursText = site.hours.map((h) => `${h.label}: ${h.open} to ${h.close}`);
+---
+
+<Base
+  active="about"
+  title="Contact and 24-hour breakdown"
+  description="Truck tyre breakdown in the Eastern Cape? Call 066 190 6725, 24 hours. Quotes, address, opening hours and directions for East London Bandag, 7 Wells Road, Gately."
+>
+  <Emergency level="h1" />
+
+  <section class="section">
+    <div class="wrap split">
+      <div class="stack" id="quote">
+        <h2>Request a quote</h2>
+        <p class="muted">Not urgent? Tell us what you need and we will phone you back during office hours.</p>
+        <form class="form" name="quote" method="POST" action="/thanks/" data-netlify="true" netlify-honeypot="bot-field">
+          <input type="hidden" name="form-name" value="quote" />
+          <p hidden><label>Leave this empty <input name="bot-field" /></label></p>
+          <div class="field">
+            <label class="label" for="q-name">Your name</label>
+            <input class="input" id="q-name" name="name" autocomplete="name" required />
+          </div>
+          <div class="field">
+            <label class="label" for="q-company">Company or fleet <span class="muted">(optional)</span></label>
+            <input class="input" id="q-company" name="company" autocomplete="organization" />
+          </div>
+          <div class="field">
+            <label class="label" for="q-phone">Phone number</label>
+            <input class="input" id="q-phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" required pattern="[0-9 +()-]{10,}" aria-describedby="q-phone-hint" />
+            <span class="hint" id="q-phone-hint">We phone back on this number. At least 10 digits.</span>
+          </div>
+          <div class="field">
+            <label class="label" for="q-about">What is it about?</label>
+            <select class="input" id="q-about" name="about">
+              <option>Retread quote</option>
+              <option>New tyre quote</option>
+              <option>Tyre repair</option>
+              <option>Fleet programme</option>
+              <option>Rema Tip Top consumables</option>
+              <option>Warranty claim</option>
+              <option>Something else</option>
+            </select>
+          </div>
+          <div class="field">
+            <label class="label" for="q-message">Details</label>
+            <textarea class="input" id="q-message" name="message" rows="4" aria-describedby="q-message-hint"></textarea>
+            <span class="hint" id="q-message-hint">Tyre size, how many, and where the vehicles run, if you know.</span>
+          </div>
+          <Consent id="q-consent" purpose="respond to this enquiry" />
+          <button class="btn btn--lg" type="submit">Send my request</button>
+        </form>
+      </div>
+
+      <div class="stack stack--lg">
+        <div class="stack">
+          <h2>Call, message or visit</h2>
+          <div class="row">
+            <a class="btn" href={site.tel.href}>Call the office {site.tel.display}</a>
+            <a class="btn btn--secondary" href={waLink('Hello, I would like a quote.')}>WhatsApp us</a>
+            <a class="btn btn--secondary" href={`mailto:${site.email}`}>Email {site.email}</a>
+          </div>
+          <p class="small muted">Fax {site.fax}</p>
+        </div>
+        <div class="card card--pad">
+          <h3>Office and factory hours</h3>
+          <p class="open-status" data-open-status data-hours={JSON.stringify(site.hours)}>See hours below</p>
+          <ul class="stack stack--sm">
+            {hoursText.map((h) => <li>{h}</li>)}
+            <li class="muted">{site.hoursClosedLabel}</li>
+          </ul>
+        </div>
+        <div class="card card--pad">
+          <h3>Find the factory</h3>
+          <address style="font-style:normal">
+            {site.address.street}<br />
+            {site.address.city}, {site.address.region}, {site.address.postalCode}
+          </address>
+          <p class="muted small">Opens turn-by-turn directions from wherever you are.</p>
+          <a class="btn btn--block" href={site.mapsUrl}>Get directions in Google Maps</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<script>
+  // Arriving from a product page or tool: pre-select the subject and carry the details across.
+  const p = new URLSearchParams(location.search);
+  const about = p.get('about');
+  const select = document.querySelector<HTMLSelectElement>('#q-about');
+  const message = document.querySelector<HTMLTextAreaElement>('#q-message');
+  if (about && select && message) {
+    const match = [...select.options].find((o) => about.toLowerCase().includes(o.text.toLowerCase()));
+    if (match) select.value = match.text;
+    else select.value = /new/i.test(about) ? 'New tyre quote' : /retread/i.test(about) ? 'Retread quote' : 'Something else';
+    message.value = about + (p.get('details') ? `\n${p.get('details')}` : '');
+  }
+</script>

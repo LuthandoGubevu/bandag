@@ -1,0 +1,142 @@
+---
+import Base from '../../layouts/Base.astro';
+import Hero from '../../components/Hero.astro';
+import Proof from '../../components/Proof.astro';
+import Certs from '../../components/Certs.astro';
+import Band from '../../components/Band.astro';
+import Photo from '../../components/Photo.astro';
+import CoverageMap from '../../components/CoverageMap.astro';
+import { site, coverage } from '../../data/site';
+import { team, caseStudies } from '../../data/people';
+---
+
+<Base
+  active="about"
+  title="About our East London retread factory"
+  description="East London Bandag makes Bandag retreads at its own factory at 7 Wells Road, Gately. SANS 20109 compliant, audited by Bandag SA and the SABS, with a Full Retread Life Warranty."
+>
+  <Hero
+    eyebrow="About"
+    title="A Bandag factory in Gately, East London"
+    lede="We are an independent Bandag franchise that manufactures its own retreads. The tyre you get back was built here in East London, by people you can phone."
+    photo={{ slot: 'about-hero', alt: 'The East London Bandag factory at 7 Wells Road with branded trucks outside', brief: 'exterior of the factory with signage and branded vehicles', caption: '7 Wells Road, Gately.' }}
+  >
+    <a class="btn" href="/contact/">Visit or contact us</a>
+    <a class="btn btn--secondary" href="/resources/">Certificates and warranty documents</a>
+  </Hero>
+
+  <Proof />
+
+  <section class="section" id="facility">
+    <div class="wrap split">
+      <div class="stack">
+        <h2>The facility</h2>
+        <p>The plant operates under the Bandag manufacturing licence and the Bandag quality certification programme. It takes a casing through inspection, buffing, repair, tread building, curing and final inspection under one roof.</p>
+        <ul class="ticks">
+          <li>Retread manufacturing for truck and bus tyres</li>
+          <li>Vulcanised repairs in every size, including earthmover</li>
+          <li>Stock of fast-moving retread and new commercial sizes</li>
+          <li>Our own collection and delivery vehicles</li>
+          <li>24-hour roadside service vehicles</li>
+        </ul>
+        <a class="textlink" href="/retreads/#process">See the six-step retread process</a>
+      </div>
+      <div class="stack">
+        <Photo slot_="about-line" alt="Technicians working on the buffing and tread building stations" brief="the retread line in operation: buffing and building stations with technicians" caption="Buffing and tread building on the retread line." />
+        <Photo slot_="about-curing" alt="Retreads loaded into the Bandag DPC curing chamber" brief="tyres going into or coming out of the curing chamber" caption="The DPC curing chamber, which cures at 98 to 100°C." ratio="16 / 9" />
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--surface" id="certification">
+    <div class="wrap stack stack--lg">
+      <div class="stack stack--sm">
+        <h2>Certification and audits</h2>
+        <p class="lede">Four things stand behind every tyre that leaves the plant. Here is what each one is and what it means for your fleet.</p>
+      </div>
+      <Certs explain />
+      <a class="textlink" href="/resources/">Download the certificate and warranty terms from the resource library</a>
+    </div>
+  </section>
+
+  <section class="section" id="warranty">
+    <div class="wrap split">
+      <div class="stack">
+        <p class="eyebrow">Warranty</p>
+        <h2>The Full Retread Life Warranty</h2>
+        <p>We support every product we manufacture with a Full Retread Life Warranty.</p>
+        <h3>What it covers</h3>
+        <ul class="ticks">
+          <li>Failure of the retread materials</li>
+          <li>Faulty workmanship in the retread process</li>
+          <li>For the full life of the tread, not a fixed number of months</li>
+        </ul>
+        <h3>How to claim</h3>
+        <ol class="numbered">
+          <li>Keep the tyre. Send it back with our collection truck or bring it in.</li>
+          <li>A technician inspects it and tells you what caused the failure.</li>
+          <li>If it was our materials or workmanship, we make it right.</li>
+        </ol>
+        <div class="row">
+          <a class="btn" href="/contact/?about=Warranty%20claim#quote">Start a warranty claim</a>
+          <a class="textlink" href="/resources/">Read the full warranty terms</a>
+        </div>
+      </div>
+      <div class="stack" id="coverage">
+        <p class="eyebrow">Coverage</p>
+        <h2>Where we collect and deliver</h2>
+        <CoverageMap />
+        <ul class="tags">{coverage.map((t) => <li class="tag">{t.name}</li>)}</ul>
+        <a class="btn btn--secondary" href="/collection/" style="align-self:flex-start">Request a collection</a>
+      </div>
+    </div>
+  </section>
+
+  {
+    team.length > 0 && (
+      <section class="section section--surface" id="team">
+        <div class="wrap stack stack--lg">
+          <h2>The people you will deal with</h2>
+          <ul class="grid-cards">
+            {team.map((p) => (
+              <li class="card">
+                <Photo slot_={p.photo} alt={`${p.name}, ${p.role}`} brief={`portrait of ${p.name} at work`} ratio="1 / 1" />
+                <div class="card__body">
+                  <h3 class="card__title">{p.name}</h3>
+                  <p class="card__text">{p.role}</p>
+                  {p.tel && <a class="card__cta" href={`tel:${p.tel.replace(/\s/g, '')}`}>Call {p.name.split(' ')[0]} on {p.tel}</a>}
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+    )
+  }
+
+  {
+    caseStudies.length > 0 && (
+      <section class="section" id="case-studies">
+        <div class="wrap stack stack--lg">
+          <h2>What Eastern Cape fleets have saved</h2>
+          <div class="grid-2">
+            {caseStudies.map((c) => (
+              <article class="card card--pad">
+                <span class="tag">{c.sector}</span>
+                <h3>{c.fleet}</h3>
+                <p class="proof__big">{c.result}</p>
+                <p class="muted">{c.detail}</p>
+                {c.quote && <blockquote style="margin:0"><p>“{c.quote}”</p><footer class="small muted">{c.person}</footer></blockquote>}
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  <Band tone="tint" title="Come and see the plant" text="The best argument for a retread is watching one being made. Phone ahead and we will walk you through the line.">
+    <a class="btn" href={site.tel.href}>Call {site.tel.display}</a>
+    <a class="btn btn--secondary" href={site.mapsUrl}>Get directions to Gately</a>
+  </Band>
+</Base>
