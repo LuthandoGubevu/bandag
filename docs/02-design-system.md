@@ -33,8 +33,9 @@ file: `src/styles/global.css`.
 | `--danger` | #B3261E | #FF8A80 | Errors, rejection |
 
 Dark mode follows the device and can be overridden with the footer toggle; the
-choice is remembered. All text pairs meet WCAG 2.2 AA (4.5:1) and most exceed
-7:1, for outdoor reading.
+choice is remembered. All text pairs meet WCAG 2.2 AA (4.5:1); body text is 16.9:1 or better and
+the lowest pair (status labels on their tint) is 5.6:1. The computed ratios
+are tabled on the `/design-system/` page.
 
 ## Type scale
 

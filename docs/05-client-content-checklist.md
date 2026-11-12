@@ -21,7 +21,7 @@
 
 Real photographs only: the Gately factory, the retread line, technicians and
 branded vehicles. Every empty slot on the site shows its name and a brief for
-the shot. Roughly 35 slots; the priority ones are:
+the shot. About 40 slots (each tread and landing page has its own); the priority ones are:
 
 1. `home-hero`: the retread line with a technician at work
 2. `about-hero`: factory exterior with signage and vehicles
