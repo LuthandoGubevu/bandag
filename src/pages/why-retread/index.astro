@@ -1,0 +1,81 @@
+---
+import Base from '../../layouts/Base.astro';
+import Hero from '../../components/Hero.astro';
+import Card from '../../components/Card.astro';
+import Certs from '../../components/Certs.astro';
+import Band from '../../components/Band.astro';
+import { articles } from '../../data/articles';
+import { site } from '../../data/site';
+
+const faqs = [
+  { q: 'What is a retread?', a: 'A used tyre casing that has passed inspection and been given a new tread in a controlled manufacturing process. The casing is designed to outlast several treads.' },
+  { q: 'Are retreads safe?', a: 'A retread built on an inspected casing to SANS 20109, in an audited plant, is a manufactured product with its own standard and warranty.' },
+  { q: 'How far does a retread run?', a: 'A Bandag retread matched to the right axle and route is built to deliver mileage comparable with a new tyre in the same application. Actual life depends on pressure, load and route.' },
+  { q: 'How much does a retread save?', a: 'A retread costs a fraction of the price of a comparable new tyre. Because it reuses the casing, the cost per kilometre over the life of the casing falls with every retread.' },
+  { q: 'How long does it take?', a: 'A maximum of one week from pickup to delivery, with weekly collection throughout the northern Eastern Cape.' },
+  { q: 'What if a retread fails?', a: 'Every retread we manufacture carries a Full Retread Life Warranty against material failure and faulty workmanship.' },
+];
+const faqLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqs.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
+};
+---
+
+<Base
+  active="why"
+  title="Why retread? Safety, mileage and cost per kilometre"
+  description="A decision resource for fleets considering retreads: what a retread is, how safe it is, how far it runs, new versus retread, premium versus budget and the environmental case."
+  jsonld={faqLd}
+>
+  <Hero
+    eyebrow="Why retread"
+    title="Should your fleet run retreads?"
+    lede="Straight answers on safety, mileage and cost for transport managers deciding whether to switch. Start with the number that settles most arguments."
+  >
+    <a class="btn" href="/tools/cpk-calculator/">Calculate your cost per kilometre</a>
+    <a class="btn btn--secondary" href="/tools/casing-check/">Check your casings</a>
+  </Hero>
+
+  <section class="section">
+    <div class="wrap stack stack--lg">
+      <h2>The questions fleets ask first</h2>
+      <div class="grid-2">
+        {faqs.map((f) => <div class="card card--pad"><h3>{f.q}</h3><p class="muted">{f.a}</p></div>)}
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--surface">
+    <div class="wrap stack stack--lg">
+      <h2>Read the detail</h2>
+      <div class="grid-cards">
+        {articles.map((a) => <Card href={`/why-retread/${a.slug}/`} tag={a.tag} title={a.title} text={a.summary} cta={`Read: ${a.title.toLowerCase().replace(/\?$/, '')}`} />)}
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap stack stack--lg">
+      <h2>Work it out with your own numbers</h2>
+      <div class="grid-cards">
+        <Card href="/tools/cpk-calculator/" tag="Tool" title="Cost per km calculator" text="Fleet size, annual kilometres and prices in; annual saving out, as a link you can share." cta="Open the calculator" />
+        <Card href="/tools/tyre-finder/" tag="Tool" title="Tyre finder" text="Vehicle, axle and duty in; the right Bandag tread or new tyre out." cta="Open the tyre finder" />
+        <Card href="/tools/casing-check/" tag="Tool" title="Casing check" text="What makes a casing retreadable, and what gets one rejected." cta="Open the casing check" />
+        <Card href="/retreads/#process" tag="Process" title="How a retread is made" text="Six steps from inspected casing to warranted tyre, in one week." cta="See the retread process" />
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--surface">
+    <div class="wrap stack stack--lg">
+      <h2>The proof behind the claims</h2>
+      <Certs />
+    </div>
+  </section>
+
+  <Band tone="tint" title="Rather talk it through?" text="A technician will go through your fleet, routes and current tyre spend with you.">
+    <a class="btn" href="/contact/?about=Switching%20to%20retreads#quote">Ask us to call you</a>
+    <a class="btn btn--secondary" href={site.tel.href}>Call {site.tel.display}</a>
+  </Band>
+</Base>

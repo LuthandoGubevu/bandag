@@ -1,0 +1,19 @@
+---
+import { proofPoints } from '../data/site';
+---
+
+<section class="section--surface" aria-label="Why fleets use us">
+  <div class="wrap">
+    <ul class="proof">
+      {
+        proofPoints.map((p) => (
+          <li class="proof__item">
+            <span class="proof__big">{p.big}</span>
+            <span class="proof__title">{p.title}</span>
+            <span class="proof__text">{p.text}</span>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>

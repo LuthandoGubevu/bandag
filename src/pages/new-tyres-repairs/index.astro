@@ -1,0 +1,110 @@
+---
+import Base from '../../layouts/Base.astro';
+import Hero from '../../components/Hero.astro';
+import Band from '../../components/Band.astro';
+import Photo from '../../components/Photo.astro';
+import { site } from '../../data/site';
+import { commonSizes } from '../../data/treads';
+
+const newBrands = site.brands.filter((b) => b.role === 'New tyres');
+const about = (s: string) => `/contact/?about=${encodeURIComponent(s)}#quote`;
+---
+
+<Base
+  active="new"
+  title="New truck tyres and vulcanised repairs in East London"
+  description="New Apollo, Dunlop and Sumitomo truck and bus tyres in all sizes, vulcanised repairs up to earthmover size, and Rema Tip Top repair consumables, from East London Bandag."
+>
+  <Hero
+    eyebrow="New tyres and repairs"
+    title="New tyres, and repairs that save the ones you have"
+    lede="New truck and bus tyres in every size, vulcanised repairs up to earthmover size, and Rema Tip Top consumables for your own workshop."
+    photo={{ slot: 'new-tyres-hero', alt: 'Racks of new commercial tyres in the East London Bandag stockroom', brief: 'stockroom with racks of new truck tyres, brand labels visible', caption: 'Fast-moving commercial sizes are kept in stock in Gately.' }}
+  >
+    <a class="btn" href="/tools/tyre-finder/">Find a tyre by size</a>
+    <a class="btn btn--secondary" href={about('New tyre quote')}>Request a quote</a>
+  </Hero>
+
+  <section class="section" id="new-tyres">
+    <div class="wrap stack stack--lg">
+      <div class="stack stack--sm">
+        <h2>New tyres by brand</h2>
+        <p class="lede">We supply new tyres where a retread is not the answer: steer axles, first fitment and casings that have reached the end of their life.</p>
+      </div>
+      <div class="grid-cards">
+        {
+          newBrands.map((b) => (
+            <a class="card" href={about(`New ${b.name} tyres`)}>
+              <span class="card__body">
+                <span class="tag">New tyres</span>
+                <span class="card__title">{b.name}</span>
+                <span class="card__text">{b.note}</span>
+                <span class="card__cta">Ask for {b.name} prices and stock</span>
+              </span>
+            </a>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--surface" id="sizes">
+    <div class="wrap stack stack--lg">
+      <div class="stack stack--sm">
+        <h2>Sizes we keep on the shelf</h2>
+        <p class="lede">We hold stock of the fast-moving retread and new commercial sizes. Choose a size to ask for today's stock and price, or call and we will check while you hold.</p>
+      </div>
+      <ul class="chips">
+        {commonSizes.map((s) => <li><a class="chip" style="display:inline-flex;align-items:center;text-decoration:none" href={`/tools/tyre-finder/?size=${encodeURIComponent(s)}`}>{s}</a></li>)}
+      </ul>
+      <p>Different size? We supply all sizes to order. <a href="/tools/tyre-finder/">Enter your size in the tyre finder</a> or call <a href={site.tel.href}>{site.tel.display}</a>.</p>
+    </div>
+  </section>
+
+  <section class="section" id="repairs">
+    <div class="wrap split">
+      <div class="stack">
+        <p class="eyebrow">Vulcanised repairs</p>
+        <h2>Repairs in every size, including earthmover</h2>
+        <p>A nail hole or a sidewall cut does not have to end a tyre's life. We repair in our own plant, vulcanising the repair into the casing so that it becomes part of the tyre.</p>
+        <ul class="ticks">
+          <li>Truck, bus and earthmover tyres, in every size</li>
+          <li>Nail hole, section and sidewall repairs within safe limits</li>
+          <li>Rema Tip Top repair materials throughout</li>
+          <li>The same one-week maximum turnaround as our retreads</li>
+          <li>An honest answer when a tyre is not worth repairing</li>
+        </ul>
+        <div class="row">
+          <a class="btn" href={about('Tyre repair')}>Ask about a repair</a>
+          <a class="btn btn--secondary" href="/collection/">Book a collection</a>
+        </div>
+      </div>
+      <Photo slot_="repairs-earthmover" alt="A technician preparing a section repair on an earthmover tyre" brief="technician working on a section repair to a large earthmover tyre" caption="Earthmover repairs are done in the plant, not sent away." />
+    </div>
+  </section>
+
+  <section class="section section--surface" id="consumables">
+    <div class="wrap split">
+      <Photo slot_="rema-tip-top" alt="Rema Tip Top patches, cements and tools on the trade counter" brief="Rema Tip Top patches, cements and tools laid out on the counter" caption="The same Rema Tip Top materials we use in the plant." />
+      <div class="stack">
+        <p class="eyebrow">Rema Tip Top consumables</p>
+        <h2>Repair materials for your own workshop</h2>
+        <p>We stock the Rema Tip Top range over the counter and deliver it with your weekly tyre run.</p>
+        <ul class="ticks">
+          <li>Radial and cross-ply repair patches</li>
+          <li>Vulcanising cements and cleaning solutions</li>
+          <li>Tubeless plugs, valves and valve hardware</li>
+          <li>Buffing tools, rasps and stitchers</li>
+        </ul>
+        <div class="row">
+          <a class="btn" href={about('Rema Tip Top consumables')}>Order consumables</a>
+          <a class="textlink" href="/resources/">Rema Tip Top product guide</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <Band tone="yellow" title="Tyre failed on the road?" text="We repair and replace around the clock, at the roadside.">
+    <a class="btn btn--ink btn--lg" href={site.roadside.href}>Call {site.roadside.display}</a>
+  </Band>
+</Base>

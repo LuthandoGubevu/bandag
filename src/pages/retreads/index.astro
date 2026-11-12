@@ -1,0 +1,133 @@
+---
+import Base from '../../layouts/Base.astro';
+import Hero from '../../components/Hero.astro';
+import Proof from '../../components/Proof.astro';
+import Card from '../../components/Card.astro';
+import Certs from '../../components/Certs.astro';
+import Band from '../../components/Band.astro';
+import Photo from '../../components/Photo.astro';
+import Video from '../../components/Video.astro';
+import { site, processSteps } from '../../data/site';
+import { treads, duties } from '../../data/treads';
+import { applications } from '../../data/landings';
+---
+
+<Base
+  active="retreads"
+  title="Bandag retreads for truck and bus"
+  description="Bandag retreads made in East London: nine Application Specific treads, a one-week turnaround, SANS 20109 compliance and a Full Retread Life Warranty."
+>
+  <Hero
+    eyebrow="Retreads"
+    title="Bandag retreads, made in East London"
+    lede="A new tread on the casing you already own, built for the job the tyre will do. One week from pickup to delivery, under a Full Retread Life Warranty."
+    photo={{ slot: 'retreads-hero', alt: 'Finished Bandag retreads waiting for delivery at the Gately factory', brief: 'row of finished retreads ready for dispatch', caption: 'Finished retreads ready for the weekly delivery run.' }}
+  >
+    <a class="btn" href="/contact/?about=Retread%20quote#quote">Request a retread quote</a>
+    <a class="btn btn--secondary" href="/collection/">Book a casing collection</a>
+  </Hero>
+
+  <Proof />
+
+  <section class="section" id="range">
+    <div class="wrap stack stack--lg">
+      <div class="stack stack--sm">
+        <h2>The Application Specific tread range</h2>
+        <p class="lede">Nine treads, each built for one kind of work. Filter by duty, then open the tread to check whether it suits your axle and route.</p>
+      </div>
+      <div class="chips" role="group" aria-label="Filter treads by duty" data-filter-group>
+        <button class="chip" type="button" aria-pressed="true" data-value="All">All duties</button>
+        {duties.map((d) => <button class="chip" type="button" aria-pressed="false" data-value={d}>{d}</button>)}
+      </div>
+      <p class="visually-hidden" role="status" data-filter-count></p>
+      <div class="grid-cards" data-filter-list>
+        {
+          treads.map((t) => (
+            <Card
+              href={`/retreads/${t.slug}/`}
+              code
+              tag={`${t.axles.length === 3 ? 'All positions' : t.axles.join(', ')} · ${t.duties[0]}`}
+              title={t.code}
+              text={t.summary}
+              cta={`View the ${t.code} tread`}
+              filter={t.duties.join('|')}
+              photo={{ slot: `tread-${t.slug}`, alt: `The Bandag ${t.code} tread pattern`, brief: `${t.code} tread pattern, straight on, even light` }}
+            />
+          ))
+        }
+      </div>
+      <p>Not sure which one? <a href="/tools/tyre-finder/">The tyre finder asks three questions and names the tread</a>.</p>
+      <p>By application: {applications.map((a, i) => <>{i > 0 && ', '}<a href={`/applications/${a.slug}/`}>{a.h1.toLowerCase()}</a></>)}.</p>
+    </div>
+  </section>
+
+  <section class="section section--surface" id="process">
+    <div class="wrap stack stack--lg">
+      <div class="stack stack--sm">
+        <h2>Six steps, one week</h2>
+        <p class="lede">What happens to your casing between our truck collecting it and bringing it back.</p>
+      </div>
+      <ol class="steps">
+        {processSteps.map((s) => <li><h3>{s.title}</h3><p>{s.text}</p></li>)}
+      </ol>
+      <Video id={site.videos.retreadProcess} title="The Bandag retread process" />
+    </div>
+  </section>
+
+  <section class="section" id="casings">
+    <div class="wrap split">
+      <div class="stack">
+        <p class="eyebrow">Casing management</p>
+        <h2>A retread is only as good as its casing</h2>
+        <p>The casing is the most valuable part of a tyre, and you have already paid for it. Looked after, a quality casing can be retreaded more than once, and every retread spreads its cost over more kilometres.</p>
+        <h3>What we accept</h3>
+        <ul class="ticks">
+          <li>Sound sidewalls with no cuts through to the cords</li>
+          <li>No exposed or rusted steel in the crown or shoulders</li>
+          <li>An undamaged, undistorted bead</li>
+          <li>No signs of having been run flat or badly under-inflated</li>
+          <li>Injuries within repairable limits for the position and size</li>
+        </ul>
+        <h3>What happens to every casing</h3>
+        <p>Each casing is logged against your account when it arrives, inspected, and either passed for retreading or returned with the reason for rejection. Fleet account holders can follow each one from receipt to delivery.</p>
+        <div class="row">
+          <a class="btn" href="/tools/casing-check/">Check a casing yourself</a>
+          <a class="btn btn--secondary" href="/account/">Track casings in your account</a>
+        </div>
+      </div>
+      <Photo slot_="retreads-inspection" alt="A technician inspecting the inside of a casing under a lamp" brief="casing inspection station: technician checking the inside of a casing with a lamp" caption="Every casing is inspected inside and out before it is accepted." />
+    </div>
+  </section>
+
+  <section class="section section--surface">
+    <div class="wrap stack stack--lg">
+      <h2>What stands behind every retread</h2>
+      <Certs />
+      <a class="textlink" href="/about/#certification">What each certification means in practice</a>
+    </div>
+  </section>
+
+  <Band tone="yellow" title="Which tread for which truck?" text="Tell the tyre finder the vehicle, axle and duty and it names the tread.">
+    <a class="btn btn--ink" href="/tools/tyre-finder/">Open the tyre finder</a>
+    <a class="btn btn--on-yellow" href="/tools/cpk-calculator/">Calculate your saving</a>
+  </Band>
+</Base>
+
+<script>
+  const group = document.querySelector('[data-filter-group]');
+  const cards = document.querySelectorAll<HTMLElement>('[data-filter-list] [data-filter]');
+  const count = document.querySelector('[data-filter-count]');
+  group?.addEventListener('click', (e) => {
+    const btn = (e.target as HTMLElement).closest<HTMLButtonElement>('.chip');
+    if (!btn) return;
+    group.querySelectorAll('.chip').forEach((c) => c.setAttribute('aria-pressed', String(c === btn)));
+    const v = btn.dataset.value!;
+    let shown = 0;
+    cards.forEach((c) => {
+      const show = v === 'All' || c.dataset.filter!.split('|').includes(v);
+      c.hidden = !show;
+      if (show) shown++;
+    });
+    if (count) count.textContent = `${shown} treads shown`;
+  });
+</script>

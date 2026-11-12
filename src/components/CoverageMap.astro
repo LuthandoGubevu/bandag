@@ -1,0 +1,28 @@
+---
+import { coverage } from '../data/site';
+const W = 520, H = 640, X = 179, Y = 212;
+const pt = (lat: number, lng: number) => ({ x: Math.round((lng - 26.3) * X), y: Math.round((-30.4 - lat) * Y) });
+const base = coverage.find((t) => t.base)!;
+const b = pt(base.lat, base.lng);
+const coast = [[-33.45, 27.0], [-33.12, 27.75], [-33.05, 27.95], [-32.7, 28.42], [-32.25, 28.95], [-31.75, 29.3]].map(([la, ln]) => pt(la, ln)).map((p) => `${p.x + 14},${p.y + 14}`).join(' ');
+---
+
+<figure class="stack stack--sm">
+  <svg class="coverage-map" viewBox={`0 0 ${W} ${H}`} role="img" aria-label={`Map of the weekly collection and delivery area: ${coverage.map((t) => t.name).join(', ')}`} style="max-width:520px">
+    <polyline class="coast" points={coast}></polyline>
+    <text x={W - 150} y={H - 70} style="font-weight:500;fill:var(--text-2)">Indian Ocean</text>
+    {coverage.filter((t) => !t.base).map((t) => { const p = pt(t.lat, t.lng); return <line class="route" x1={b.x} y1={b.y} x2={p.x} y2={p.y} />; })}
+    {
+      coverage.map((t) => {
+        const p = pt(t.lat, t.lng);
+        return (
+          <g>
+            <circle class={t.base ? 'base' : 'town'} cx={p.x} cy={p.y} r={t.base ? 10 : 7} />
+            <text x={p.x + 14} y={t.base ? p.y - 12 : p.y + 5}>{t.base ? 'East London (factory)' : t.name.replace(/ \(.*/, '')}</text>
+          </g>
+        );
+      })
+    }
+  </svg>
+  <figcaption class="small muted">Weekly collection and delivery routes from the Gately factory. If your depot is between or beyond these towns, ask us: we probably pass you.</figcaption>
+</figure>

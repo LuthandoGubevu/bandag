@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /account/
+Disallow: /design-system/
+Disallow: /thanks/
+
+Sitemap: https://www.eastlondonbandag.com/sitemap-index.xml

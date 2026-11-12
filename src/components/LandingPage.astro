@@ -1,0 +1,60 @@
+---
+import Base from '../layouts/Base.astro';
+import Hero from './Hero.astro';
+import Proof from './Proof.astro';
+import Card from './Card.astro';
+import Band from './Band.astro';
+import CoverageMap from './CoverageMap.astro';
+import type { Landing } from '../data/landings';
+import { treads } from '../data/treads';
+import { site } from '../data/site';
+
+interface Props { page: Landing; kind: 'application' | 'area' }
+const { page: p, kind } = Astro.props;
+const fits = p.duty ? treads.filter((t) => t.duties.includes(p.duty!)) : [];
+---
+
+<Base active={kind === 'application' ? 'retreads' : 'about'} title={p.title} description={p.description}>
+  <Hero eyebrow={p.eyebrow} title={p.h1} lede={p.lede} photo={p.photo}>
+    <a class="btn" href={`/contact/?about=${encodeURIComponent(`Retread quote: ${p.eyebrow}`)}#quote`}>Request a quote</a>
+    <a class="btn btn--secondary" href="/collection/">Request a collection</a>
+  </Hero>
+  <Proof />
+  <section class="section">
+    <div class="wrap split">
+      <div class="stack">
+        <h2>What we do for {kind === 'application' ? `${p.eyebrow.toLowerCase()} fleets` : `fleets in ${p.eyebrow === 'East London' ? 'East London' : 'the northern Eastern Cape'}`}</h2>
+        <ul class="ticks">{p.points.map((x) => <li>{x}</li>)}</ul>
+      </div>
+      <div class="prose">
+        {p.body.map((b) => <><h3>{b.heading}</h3><p>{b.text}</p></>)}
+      </div>
+    </div>
+  </section>
+  {
+    fits.length > 0 && (
+      <section class="section section--surface">
+        <div class="wrap stack stack--lg">
+          <h2>Bandag treads for {p.eyebrow.toLowerCase()} work</h2>
+          <div class="grid-cards">
+            {fits.map((t) => <Card href={`/retreads/${t.slug}/`} code tag={t.axles.length === 3 ? 'All positions' : t.axles.join(', ')} title={t.code} text={t.summary} cta={`View the ${t.code} tread`} />)}
+          </div>
+          <a class="textlink" href="/tools/tyre-finder/">Use the tyre finder to choose by axle</a>
+        </div>
+      </section>
+    )
+  }
+  {
+    kind === 'area' && (
+      <section class="section section--surface">
+        <div class="wrap wrap--narrow stack">
+          <h2>Where the weekly run goes</h2>
+          <CoverageMap />
+        </div>
+      </section>
+    )
+  }
+  <Band tone="yellow" title="Vehicle standing right now?" text="24-hour truck tyre roadside assistance.">
+    <a class="btn btn--ink btn--lg" href={site.roadside.href}>Call {site.roadside.display}</a>
+  </Band>
+</Base>

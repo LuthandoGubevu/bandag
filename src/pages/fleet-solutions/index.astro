@@ -1,0 +1,127 @@
+---
+import Base from '../../layouts/Base.astro';
+import Hero from '../../components/Hero.astro';
+import Proof from '../../components/Proof.astro';
+import Card from '../../components/Card.astro';
+import Band from '../../components/Band.astro';
+import Photo from '../../components/Photo.astro';
+import { site, coverage } from '../../data/site';
+const about = (s: string) => `/contact/?about=${encodeURIComponent(s)}#quote`;
+---
+
+<Base
+  active="fleet"
+  title="Fleet tyre solutions for the Eastern Cape"
+  description="One tyre partner for your fleet: Bandag PSI, tyre management, weekly collection and delivery, technical support, driver and workshop training and 24-hour breakdown service."
+>
+  <Hero
+    ink
+    eyebrow="Fleet solutions"
+    title="One partner for every tyre in the fleet"
+    lede="Weekly collection, tracked casings, technical support and a 24-hour breakdown line, under one account and one cost per kilometre."
+    photo={{ slot: 'fleet-hero', alt: 'An East London Bandag truck collecting casings at a fleet depot', brief: 'branded collection truck being loaded with casings at a customer depot', caption: 'The weekly collection run.' }}
+  >
+    <a class="btn btn--yellow" href={about('Fleet programme')}>Talk to a fleet specialist</a>
+    <a class="btn btn--on-dark" href="/collection/">Request a collection</a>
+  </Hero>
+
+  <Proof />
+
+  <section class="section">
+    <div class="wrap stack stack--lg">
+      <h2>What a fleet account includes</h2>
+      <div class="grid-cards">
+        <Card href="#psi" tag="Programme" title="Bandag PSI" text="Scheduled fleet inspections and reporting that tie tyre condition to cost per kilometre." cta="How Bandag PSI works" />
+        <Card href="#management" tag="Programme" title="Tyre management" text="A named contact, a record for every casing and a retread plan for each vehicle class." cta="How tyre management works" />
+        <Card href="/collection/" tag="Logistics" title="Weekly collection and delivery" text="A fixed weekly run through the northern Eastern Cape. One week from pickup to delivery." cta="Request a collection" />
+        <Card href="#support" tag="Support" title="Technical support" text="Tread selection, wear analysis and warranty assessment from the people who build the tyre." cta="What support covers" />
+        <Card href="#training" tag="Training" title="Driver and workshop training" text="Inspection, inflation and casing care, taught on your site." cta="What training covers" />
+        <Card href={site.roadside.href} tag="Emergency" title="24-hour breakdown service" text="Roadside truck tyre assistance, day and night, every day of the year." cta={`Call ${site.roadside.display}`} />
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--surface" id="psi">
+    <div class="wrap split">
+      <div class="stack">
+        <p class="eyebrow">Bandag PSI</p>
+        <h2>Know what every tyre is costing you</h2>
+        <p>Bandag PSI is the fleet inspection programme run with Bandag. We inspect the fleet in your yard on an agreed schedule and report back in plain figures.</p>
+        <ul class="ticks">
+          <li>Pressure and tread depth recorded for every wheel position</li>
+          <li>Irregular wear, mismatched duals and damage flagged before they cost a casing</li>
+          <li>Tyres pulled for retreading at the right depth, not after it</li>
+          <li>A fleet report that shows where the money is going</li>
+        </ul>
+        <a class="btn" href={about('Bandag PSI')} style="align-self:flex-start">Ask about Bandag PSI</a>
+      </div>
+      <div class="stack" id="management">
+        <p class="eyebrow">Tyre management</p>
+        <h2>A plan for each vehicle class</h2>
+        <p>We agree with you what to fit on each axle of each vehicle type, when to pull it, how many retread lives to expect from the casing and what to do with it at the end. Then we keep the records.</p>
+        <ul class="ticks">
+          <li>One named contact who knows your fleet</li>
+          <li>Every casing recorded from receipt to delivery</li>
+          <li>Stock of your sizes held for you in Gately</li>
+          <li>Casing status, documents and reorders in your <a href="/account/">fleet account</a></li>
+        </ul>
+        <a class="btn btn--secondary" href={about('Tyre management programme')} style="align-self:flex-start">Plan your fleet tyres</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="collection">
+    <div class="wrap split split--center">
+      <Photo slot_="fleet-delivery" alt="Finished retreads being offloaded from the East London Bandag truck" brief="driver offloading finished retreads at a customer site" caption="Finished tyres come back on the same weekly run." />
+      <div class="stack">
+        <p class="eyebrow">Weekly collection and delivery</p>
+        <h2>We fetch the casings and bring back tyres</h2>
+        <p>Our truck runs through the northern Eastern Cape every week. Casings collected on one run come back as finished retreads within a week.</p>
+        <ul class="tags">{coverage.map((t) => <li class="tag">{t.name}</li>)}</ul>
+        <div class="row">
+          <a class="btn" href="/collection/">Request a collection</a>
+          <a class="textlink" href="/about/#coverage">See the coverage map</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--surface">
+    <div class="wrap split">
+      <div class="stack" id="support">
+        <p class="eyebrow">Technical support</p>
+        <h2>Straight answers from the plant</h2>
+        <ul class="ticks">
+          <li>The right tread for each axle and route</li>
+          <li>Wear analysis when a tyre is not lasting as it should</li>
+          <li>Failed tyre inspection and warranty assessment</li>
+          <li>Pressure and load advice for your vehicles</li>
+        </ul>
+        <a class="btn btn--secondary" href={about('Technical support')} style="align-self:flex-start">Ask a technician</a>
+      </div>
+      <div class="stack" id="training">
+        <p class="eyebrow">Training</p>
+        <h2>Drivers and workshops that protect the casing</h2>
+        <ul class="ticks">
+          <li>Daily tyre checks for drivers</li>
+          <li>Correct inflation and matching of duals</li>
+          <li>Spotting damage before it destroys a casing</li>
+          <li>Safe fitting and handling in the workshop</li>
+        </ul>
+        <div class="row">
+          <a class="btn btn--secondary" href={about('Driver and workshop training')}>Book training</a>
+          <a class="textlink" href="/resources/">Safety downloads</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <Band tone="yellow" title="Breakdown service, 24 hours a day" text="Fleet customers and passing trucks alike. Outside our area, the ETA Bandag national line takes over.">
+    <a class="btn btn--ink btn--lg" href={site.roadside.href}>Call {site.roadside.display}</a>
+    <a class="btn btn--on-yellow" href={site.eta.href}>ETA national {site.eta.display}</a>
+  </Band>
+
+  <Band tone="ink" title="Already a fleet customer?" text="See casings in progress, upcoming collections and your documents.">
+    <a class="btn btn--yellow" href="/account/">Open my fleet account</a>
+  </Band>
+</Base>

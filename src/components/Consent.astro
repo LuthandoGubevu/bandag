@@ -1,0 +1,13 @@
+---
+// POPIA consent. Required on every form that collects personal information.
+interface Props { purpose: string; id: string }
+const { purpose, id } = Astro.props;
+---
+
+<label class="check" for={id}>
+  <input type="checkbox" id={id} name="consent" value="yes" required />
+  <span>
+    I agree that East London Bandag may use these details to {purpose}, as set out in the
+    <a href="/privacy/">privacy notice</a>. My details will not be used for anything else or passed on.
+  </span>
+</label>

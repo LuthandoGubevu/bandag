@@ -1,0 +1,19 @@
+---
+import Base from '../layouts/Base.astro';
+import { site, nav } from '../data/site';
+---
+
+<Base title="Page not found" description="That page has moved or no longer exists." noindex>
+  <section class="section">
+    <div class="wrap wrap--narrow stack stack--lg">
+      <p class="eyebrow">Page not found</p>
+      <h1>That page has moved</h1>
+      <p class="lede">The site was rebuilt and some old addresses no longer exist. One of these should get you there.</p>
+      <ul class="stack stack--sm">
+        {nav.map((n) => <li><a class="textlink" href={n.href}>{n.label}</a></li>)}
+        <li><a class="textlink" href="/contact/">Contact and 24-hour breakdown</a></li>
+      </ul>
+      <p>Or call us on <a href={site.tel.href}><b>{site.tel.display}</b></a>.</p>
+    </div>
+  </section>
+</Base>

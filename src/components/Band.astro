@@ -1,0 +1,13 @@
+---
+// Full-width call-to-action band. tone: tint | yellow | ink
+interface Props { tone?: 'tint' | 'yellow' | 'ink'; title: string; text?: string }
+const { tone = 'tint', title, text } = Astro.props;
+---
+
+<section class:list={['section', `section--${tone}`]}>
+  <div class="wrap stack">
+    <h2>{title}</h2>
+    {text && <p class="lede">{text}</p>}
+    <div class="row"><slot /></div>
+  </div>
+</section>

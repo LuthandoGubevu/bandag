@@ -1,0 +1,138 @@
+---
+import Base from '../../../layouts/Base.astro';
+import { site } from '../../../data/site';
+
+// Example figures only. They exist so the calculator shows a result on first
+// load; the visitor is told to replace them. TO CONFIRM with the client.
+const inputs = [
+  { id: 'trucks', label: 'Vehicles in the fleet', unit: '', value: 20, min: 1, step: 1 },
+  { id: 'tyres', label: 'Tyres per vehicle that can run retreads', unit: '', value: 16, min: 1, step: 1, hint: 'Usually drive and trailer positions.' },
+  { id: 'km', label: 'Kilometres per vehicle per year', unit: 'km', value: 100000, min: 1000, step: 1000 },
+  { id: 'newPrice', label: 'Price of a new tyre', unit: 'R', value: 6500, min: 1, step: 50 },
+  { id: 'rtPrice', label: 'Price of a retread', unit: 'R', value: 2900, min: 1, step: 50 },
+  { id: 'newLife', label: 'Life of a new tyre', unit: 'km', value: 120000, min: 1000, step: 1000 },
+  { id: 'rtLife', label: 'Life of a retread', unit: 'km', value: 100000, min: 1000, step: 1000 },
+  { id: 'retreads', label: 'Retreads per casing', unit: '', value: 2, min: 1, step: 1, hint: 'How many times each casing is retreaded.' },
+];
+---
+
+<Base
+  active="why"
+  title="Cost per kilometre calculator: new tyres versus retreads"
+  description="Compare the cost per kilometre of new tyres and Bandag retreads for your fleet size and annual kilometres, and share the result."
+>
+  <section class="section">
+    <div class="wrap stack stack--lg">
+      <div class="stack stack--sm">
+        <p class="eyebrow">Tool</p>
+        <h1>What would retreads save your fleet?</h1>
+        <p class="lede">Compare new tyres only against new tyres plus retreads, over the whole life of the casing.</p>
+      </div>
+      <p class="notice"><b>The figures below are examples.</b> Replace them with your own prices and kilometres. For today's actual prices, <a href="/contact/#quote">ask for a quote</a>.</p>
+
+      <div class="split" data-cpk>
+        <form class="card card--pad" onsubmit="return false" aria-label="Your fleet">
+          <h2 class="h3">Your fleet</h2>
+          <div class="grid-2" style="grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr))">
+            {
+              inputs.map((i) => (
+                <div class="field">
+                  <label class="label" for={`cpk-${i.id}`}>{i.label} {i.unit && <span class="muted">({i.unit})</span>}</label>
+                  <input class="input" id={`cpk-${i.id}`} data-key={i.id} type="number" inputmode="numeric" min={i.min} step={i.step} value={i.value} aria-describedby={i.hint ? `cpk-${i.id}-hint` : undefined} />
+                  {i.hint && <span class="hint" id={`cpk-${i.id}-hint`}>{i.hint}</span>}
+                </div>
+              ))
+            }
+          </div>
+        </form>
+
+        <div class="result" role="status" aria-live="polite">
+          <p class="result__label">Your annual saving with retreads</p>
+          <p class="result__big" data-out="saving">R 0</p>
+          <p class="result__sub"><b data-out="pct">0</b>% lower cost per kilometre across <b data-out="positions">0</b> tyre positions. That is <b data-out="perTruck">R 0</b> per vehicle per year.</p>
+          <div class="bar">
+            <span>New tyres only: <span data-out="cpkNew">0</span> cents per km · <span data-out="annNew">R 0</span> a year</span>
+            <div class="bar__track" style="width:100%"></div>
+          </div>
+          <div class="bar">
+            <span>New plus retreads: <span data-out="cpkRt">0</span> cents per km · <span data-out="annRt">R 0</span> a year</span>
+            <div class="bar__track bar__track--retread" data-out-bar></div>
+          </div>
+          <div class="row">
+            <button class="btn btn--yellow" type="button" data-share>Share this result</button>
+            <a class="btn btn--on-dark" data-wa href="#">Send on WhatsApp</a>
+          </div>
+          <p class="small" data-share-msg aria-live="polite" style="color:#d5dae2;min-height:1.5em"></p>
+          <a class="btn btn--on-dark btn--block" data-quote href="/contact/#quote">Get a quote on these numbers</a>
+        </div>
+      </div>
+
+      <div class="prose">
+        <h2>How the sum works</h2>
+        <p><b>New only:</b> new tyre price ÷ new tyre life.</p>
+        <p><b>With retreads:</b> (new tyre price + retread price × retreads per casing) ÷ (new tyre life + retread life × retreads per casing).</p>
+        <p>Both are multiplied by the kilometres your fleet covers on those tyre positions in a year. It leaves out fitting, downtime and casing rejections, so treat it as a guide and not a quotation. <a href="/why-retread/new-vs-retread-cost-per-kilometre/">Read the full cost per kilometre argument</a>.</p>
+      </div>
+      <noscript><p class="notice">The calculator needs JavaScript. Call {site.tel.display} and we will run the numbers with you.</p></noscript>
+    </div>
+  </section>
+</Base>
+
+<script>
+  const root = document.querySelector<HTMLElement>('[data-cpk]')!;
+  const fields = [...root.querySelectorAll<HTMLInputElement>('input[data-key]')];
+  const out = (k: string) => root.querySelector<HTMLElement>(`[data-out="${k}"]`)!;
+  const rand = (n: number) => 'R ' + Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+
+  // A shared link carries its numbers in the address.
+  const params = new URLSearchParams(location.search);
+  fields.forEach((f) => {
+    const v = parseFloat(params.get(f.dataset.key!) || '');
+    if (v > 0) f.value = String(v);
+  });
+
+  function calc() {
+    const v: Record<string, number> = {};
+    fields.forEach((f) => (v[f.dataset.key!] = Math.max(0, parseFloat(f.value) || 0)));
+    const positions = v.trucks * v.tyres;
+    const cpkNew = v.newLife ? v.newPrice / v.newLife : 0;
+    const life = v.newLife + v.rtLife * v.retreads;
+    const cpkRt = life ? (v.newPrice + v.rtPrice * v.retreads) / life : 0;
+    const annNew = cpkNew * v.km * positions;
+    const annRt = cpkRt * v.km * positions;
+    const saving = Math.max(0, annNew - annRt);
+    out('saving').textContent = rand(saving);
+    out('pct').textContent = annNew ? ((saving / annNew) * 100).toFixed(0) : '0';
+    out('positions').textContent = String(positions);
+    out('perTruck').textContent = rand(v.trucks ? saving / v.trucks : 0);
+    out('cpkNew').textContent = (cpkNew * 100).toFixed(1);
+    out('cpkRt').textContent = (cpkRt * 100).toFixed(1);
+    out('annNew').textContent = rand(annNew);
+    out('annRt').textContent = rand(annRt);
+    root.querySelector<HTMLElement>('[data-out-bar]')!.style.width = (annNew ? Math.max(4, Math.min(100, (annRt / annNew) * 100)) : 100) + '%';
+
+    const q = new URLSearchParams(fields.map((f) => [f.dataset.key!, f.value]));
+    const url = `${location.origin}${location.pathname}?${q}`;
+    history.replaceState(null, '', `?${q}`);
+    const text = `Retreads would save our fleet about ${rand(saving)} a year (${(cpkNew * 100).toFixed(1)}c vs ${(cpkRt * 100).toFixed(1)}c per km).`;
+    root.querySelector<HTMLAnchorElement>('[data-wa]')!.href = `https://wa.me/?text=${encodeURIComponent(`${text} ${url}`)}`;
+    root.querySelector<HTMLAnchorElement>('[data-quote]')!.href = `/contact/?about=${encodeURIComponent('Retread quote')}&details=${encodeURIComponent(`${v.trucks} vehicles, ${positions} tyre positions, ${v.km} km a year. Calculator: ${url}`)}#quote`;
+    return { url, text };
+  }
+  fields.forEach((f) => f.addEventListener('input', calc));
+  calc();
+
+  root.querySelector('[data-share]')!.addEventListener('click', async () => {
+    const { url, text } = calc();
+    const msg = root.querySelector<HTMLElement>('[data-share-msg]')!;
+    try {
+      if (navigator.share) await navigator.share({ title: 'Retread saving for our fleet', text, url });
+      else {
+        await navigator.clipboard.writeText(url);
+        msg.textContent = 'Link copied. Paste it into an email or message.';
+      }
+    } catch {
+      msg.textContent = 'Copy the address from your browser’s address bar to share this result.';
+    }
+  });
+</script>

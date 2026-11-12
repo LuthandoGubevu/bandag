@@ -1,0 +1,44 @@
+---
+// A photo slot. Drop a file named <slot>.jpg (or .jpeg/.png/.webp) into
+// src/photos/ and it is picked up, resized and lazy-loaded automatically.
+// Until then the slot shows the shot brief, so nobody has to guess what goes where.
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+
+interface Props {
+  slot_: string;
+  alt: string;
+  brief: string;
+  caption?: string;
+  ratio?: string;
+  eager?: boolean;
+  sizes?: string;
+}
+const { slot_, alt, brief, caption, ratio = '4 / 3', eager = false, sizes = '(min-width: 900px) 50vw, 100vw' } = Astro.props;
+
+const files = import.meta.glob<{ default: ImageMetadata }>('/src/photos/*.{jpg,jpeg,png,webp}', { eager: true });
+const match = Object.entries(files).find(([p]) => p.split('/').pop()!.replace(/\.[^.]+$/, '') === slot_);
+const image = match?.[1].default;
+---
+
+<figure>
+  {
+    image ? (
+      <div class="photo" style={`aspect-ratio:${ratio}`}>
+        <Image
+          src={image}
+          alt={alt}
+          widths={[400, 800, 1200, 1600]}
+          sizes={sizes}
+          loading={eager ? 'eager' : 'lazy'}
+          fetchpriority={eager ? 'high' : 'auto'}
+        />
+      </div>
+    ) : (
+      <div class="photo photo--placeholder" style={`aspect-ratio:${ratio}`} role="img" aria-label={`Photo to come: ${alt}`}>
+        <span class="photo__brief">Photo needed ({slot_}): {brief}</span>
+      </div>
+    )
+  }
+  {caption && image && <figcaption class="photo__caption">{caption}</figcaption>}
+</figure>

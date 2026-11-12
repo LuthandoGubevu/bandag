@@ -1,0 +1,146 @@
+---
+import Base from '../../../layouts/Base.astro';
+import { treads, duties, axles, commonSizes } from '../../../data/treads';
+import { site } from '../../../data/site';
+---
+
+<Base
+  active="retreads"
+  title="Tyre finder: the right Bandag tread or new tyre"
+  description="Enter a tyre size, or choose the vehicle, axle position and duty, and get the right Bandag retread tread or new tyre for long haul, regional, urban, mining, construction or bus work."
+>
+  <section class="section">
+    <div class="wrap wrap--narrow stack stack--lg" data-finder>
+      <div class="stack stack--sm">
+        <p class="eyebrow">Tool</p>
+        <h1>Tyre finder</h1>
+        <p class="lede">Three questions and we name the tread. Or give us the size and we tell you whether it is on the shelf.</p>
+      </div>
+
+      <div class="chips" role="group" aria-label="How do you want to search?">
+        <button class="chip" type="button" aria-pressed="true" data-mode="vehicle">By vehicle and duty</button>
+        <button class="chip" type="button" aria-pressed="false" data-mode="size">By tyre size</button>
+      </div>
+
+      <div class="card card--pad" data-panel="vehicle">
+        <fieldset class="stack stack--sm" style="border:0;padding:0;margin:0">
+          <legend class="label" style="padding:0;margin-bottom:8px">1. Vehicle</legend>
+          <div class="chips" data-q="vehicle">
+            {['Truck', 'Trailer', 'Bus', 'Earthmover'].map((v, i) => <button class="chip" type="button" aria-pressed={i === 0 ? 'true' : 'false'} data-value={v}>{v}</button>)}
+          </div>
+        </fieldset>
+        <fieldset class="stack stack--sm" style="border:0;padding:0;margin:0" data-row="axle">
+          <legend class="label" style="padding:0;margin-bottom:8px">2. Axle position</legend>
+          <div class="chips" data-q="axle">
+            {axles.map((a) => <button class="chip" type="button" aria-pressed={a === 'Drive' ? 'true' : 'false'} data-value={a}>{a}</button>)}
+          </div>
+        </fieldset>
+        <fieldset class="stack stack--sm" style="border:0;padding:0;margin:0" data-row="duty">
+          <legend class="label" style="padding:0;margin-bottom:8px">3. Duty</legend>
+          <div class="chips" data-q="duty">
+            {duties.map((d) => <button class="chip" type="button" aria-pressed={d === 'Long haul' ? 'true' : 'false'} data-value={d}>{d}</button>)}
+          </div>
+        </fieldset>
+      </div>
+
+      <div class="card card--pad" data-panel="size" hidden>
+        <div class="field">
+          <label class="label" for="finder-size">Tyre size, as written on the sidewall</label>
+          <input class="input" id="finder-size" autocomplete="off" placeholder="For example 315/80R22.5" aria-describedby="finder-size-hint" />
+          <span class="hint" id="finder-size-hint">Common sizes: {commonSizes.slice(0, 4).join(', ')}.</span>
+        </div>
+      </div>
+
+      <div class="status" role="status" aria-live="polite" data-result>
+        <noscript>This tool needs JavaScript. Call {site.tel.display} and we will find the tyre with you.</noscript>
+      </div>
+    </div>
+  </section>
+
+  <script type="application/json" id="finder-data" set:html={JSON.stringify({ treads: treads.map((t) => ({ code: t.code, slug: t.slug, summary: t.summary, axles: t.axles, duties: t.duties })), sizes: commonSizes })} />
+</Base>
+
+<script>
+  type T = { code: string; slug: string; summary: string; axles: string[]; duties: string[] };
+  const root = document.querySelector<HTMLElement>('[data-finder]')!;
+  const data = JSON.parse(document.getElementById('finder-data')!.textContent!) as { treads: T[]; sizes: string[] };
+  const result = root.querySelector<HTMLElement>('[data-result]')!;
+  const sizeInput = root.querySelector<HTMLInputElement>('#finder-size')!;
+  const state = { mode: 'vehicle', vehicle: 'Truck', axle: 'Drive', duty: 'Long haul' };
+  const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
+  const enquire = (about: string, details: string) => `/contact/?about=${encodeURIComponent(about)}&details=${encodeURIComponent(details)}#quote`;
+  const press = (group: Element, value: string) => group.querySelectorAll<HTMLElement>('.chip').forEach((c) => c.setAttribute('aria-pressed', String(c.dataset.value === value)));
+
+  function renderVehicle() {
+    const axleRow = root.querySelector<HTMLElement>('[data-row="axle"]')!;
+    const dutyRow = root.querySelector<HTMLElement>('[data-row="duty"]')!;
+    axleRow.hidden = state.vehicle === 'Trailer' || state.vehicle === 'Earthmover';
+    dutyRow.hidden = state.vehicle === 'Bus' || state.vehicle === 'Earthmover';
+    const axle = state.vehicle === 'Trailer' ? 'Trailer' : state.axle;
+    const duty = state.vehicle === 'Bus' ? 'Bus' : state.duty;
+    const summary = `${state.vehicle}, ${axle.toLowerCase()} axle, ${duty.toLowerCase()}`;
+
+    if (state.vehicle === 'Earthmover') {
+      result.className = 'status';
+      result.innerHTML = `<p class="status__label">Our recommendation</p><h2 class="h3">Repair or new, not retread</h2><p>We do vulcanised repairs on earthmover tyres in every size, and supply new ones. Tell us the size and the damage and we will advise.</p><div class="row" style="margin-top:12px"><a class="btn" href="${enquire('Tyre repair', 'Earthmover tyre')}">Ask about an earthmover tyre</a><a class="btn btn--secondary" href="/new-tyres-repairs/#repairs">See repair capability</a></div>`;
+      return;
+    }
+    const matches = data.treads
+      .filter((t) => t.duties.includes(duty) && t.axles.includes(axle))
+      .sort((a, b) => a.duties.indexOf(duty) - b.duties.indexOf(duty) || a.axles.length - b.axles.length);
+    const steer = axle === 'Steer' ? `<p class="small" style="margin-top:8px"><b>Steer axle:</b> many fleets fit new tyres on the steer axle and move them to other positions for retreading later. We will advise for your vehicle.</p>` : '';
+    if (!matches.length) {
+      result.className = 'status';
+      result.innerHTML = `<p class="status__label">Our recommendation</p><h2 class="h3">A new tyre for this position</h2><p>For ${esc(summary)}, we would fit a new Apollo, Dunlop or Sumitomo tyre and retread the casing afterwards.</p>${steer}<div class="row" style="margin-top:12px"><a class="btn" href="${enquire('New tyre quote', summary)}">Enquire about a new tyre</a><a class="btn btn--secondary" href="/new-tyres-repairs/">See new tyres</a></div>`;
+      return;
+    }
+    const [best, ...rest] = matches;
+    const also = rest.length ? `<p class="small">Also suitable: ${rest.map((t) => `<a href="/retreads/${t.slug}/">${esc(t.code)}</a>`).join(', ')}.</p>` : '';
+    result.className = 'status status--good';
+    result.innerHTML = `<p class="status__label">Best match</p><h2 style="font-size:clamp(2rem,6vw,3rem)">Bandag ${esc(best.code)} retread</h2><p>${esc(best.summary)}</p><p class="small muted">For: ${esc(summary)}. Back on the truck within a week of pickup.</p>${also}${steer}<p class="small"><b>New tyre alternative:</b> Apollo, Dunlop or Sumitomo in your size.</p><div class="row" style="margin-top:12px"><a class="btn" href="${enquire(`${best.code} retread quote`, summary)}">Enquire about the ${esc(best.code)}</a><a class="btn btn--secondary" href="/retreads/${best.slug}/">View the ${esc(best.code)} tread</a></div>`;
+  }
+
+  function renderSize() {
+    const raw = sizeInput.value.toUpperCase().replace(/\s+/g, '');
+    if (!raw) {
+      result.className = 'status';
+      result.innerHTML = `<p class="status__label">Enter a size</p><p>Type the size from the sidewall and we will tell you whether we keep it in stock.</p>`;
+      return;
+    }
+    const valid = /^(\d{3}\/\d{2}R\d{2}(\.5)?|\d{1,2}(\.\d{2})?R\d{2}(\.5)?)$/.test(raw);
+    if (!valid) {
+      result.className = 'status status--bad';
+      result.innerHTML = `<p class="status__label">Check the size</p><p>That does not look like a commercial tyre size. It should read like <b>315/80R22.5</b> or <b>12R22.5</b>. Not sure? <a href="${enquire('Something else', 'Tyre size: ' + raw)}">Send it to us as it is</a> and we will work it out.</p>`;
+      return;
+    }
+    const stocked = data.sizes.includes(raw);
+    result.className = 'status ' + (stocked ? 'status--good' : '');
+    result.innerHTML = `<p class="status__label">${stocked ? 'A size we keep in stock' : 'Supplied to order'}</p><h2 style="font-size:clamp(2rem,6vw,3rem)">${esc(raw)}</h2><p>${stocked ? 'This is one of the fast-moving sizes we hold as both retreads and new tyres. Ask us to confirm today’s stock and price.' : 'We supply and retread this size to order. Ask us for availability and price.'}</p><div class="row" style="margin-top:12px"><a class="btn" href="${enquire('Retread quote', 'Tyre size: ' + raw)}">Enquire about ${esc(raw)} retreads</a><a class="btn btn--secondary" href="${enquire('New tyre quote', 'Tyre size: ' + raw)}">Enquire about ${esc(raw)} new</a></div><p class="small" style="margin-top:12px">To choose the right tread for this size, <button type="button" class="textlink" data-switch style="background:none;border:0;padding:0;font:inherit;font-weight:700;cursor:pointer;text-decoration:underline">answer three questions about the vehicle</button>.</p>`;
+    result.querySelector('[data-switch]')?.addEventListener('click', () => setMode('vehicle'));
+  }
+
+  function setMode(mode: string) {
+    state.mode = mode;
+    root.querySelectorAll<HTMLElement>('[data-mode]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.mode === mode)));
+    root.querySelectorAll<HTMLElement>('[data-panel]').forEach((p) => (p.hidden = p.dataset.panel !== mode));
+    mode === 'size' ? renderSize() : renderVehicle();
+  }
+
+  root.querySelectorAll<HTMLElement>('[data-mode]').forEach((b) => b.addEventListener('click', () => setMode(b.dataset.mode!)));
+  root.querySelectorAll<HTMLElement>('[data-q]').forEach((g) =>
+    g.addEventListener('click', (e) => {
+      const b = (e.target as HTMLElement).closest<HTMLElement>('.chip');
+      if (!b) return;
+      (state as any)[g.dataset.q!] = b.dataset.value!;
+      press(g, b.dataset.value!);
+      renderVehicle();
+    }),
+  );
+  sizeInput.addEventListener('input', renderSize);
+
+  const size = new URLSearchParams(location.search).get('size');
+  if (size) {
+    sizeInput.value = size;
+    setMode('size');
+  } else setMode('vehicle');
+</script>

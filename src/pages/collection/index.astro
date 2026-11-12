@@ -1,0 +1,141 @@
+---
+import Base from '../../layouts/Base.astro';
+import Consent from '../../components/Consent.astro';
+import { site, coverage } from '../../data/site';
+---
+
+<Base
+  active="fleet"
+  title="Request a casing collection"
+  description="Book a pickup of casings for retreading or repair anywhere on our weekly routes through the northern Eastern Cape. Finished tyres are back within a week."
+>
+  <section class="section">
+    <div class="wrap wrap--narrow stack stack--lg">
+      <div class="stack stack--sm">
+        <p class="eyebrow">Weekly collection and delivery</p>
+        <h1>Request a collection</h1>
+        <p class="lede">Four short steps. We confirm the day by phone or WhatsApp, and your tyres are back within a week of pickup.</p>
+      </div>
+
+      <div class="progress" data-progress aria-hidden="true"><span class="is-done"></span><span></span><span></span><span></span></div>
+      <p class="small muted" data-step-label role="status">Step 1 of 4</p>
+
+      <form class="form" name="collection" method="POST" action="/thanks/" data-netlify="true" netlify-honeypot="bot-field" data-steps>
+        <input type="hidden" name="form-name" value="collection" />
+        <p hidden><label>Leave this empty <input name="bot-field" /></label></p>
+
+        <fieldset class="card card--pad" data-step style="margin:0">
+          <legend class="h3" style="padding:0 8px">1. Where do we collect?</legend>
+          <label class="option"><input type="radio" name="site" value="Our depot or yard" checked /> Our depot or yard</label>
+          <label class="option"><input type="radio" name="site" value="Another site" /> Another site (mine, quarry, construction site)</label>
+          <label class="option"><input type="radio" name="site" value="Drop off at Gately" /> We will drop off at the Gately factory</label>
+          <div class="field">
+            <label class="label" for="c-town">Nearest town on our route</label>
+            <select class="input" id="c-town" name="town" required>
+              {coverage.map((t) => <option>{t.name}</option>)}
+              <option>Somewhere else (say where below)</option>
+            </select>
+          </div>
+          <div class="field">
+            <label class="label" for="c-address">Address or directions</label>
+            <textarea class="input" id="c-address" name="address" rows="2" required style="min-height:80px"></textarea>
+          </div>
+        </fieldset>
+
+        <fieldset class="card card--pad" data-step style="margin:0">
+          <legend class="h3" style="padding:0 8px">2. When suits you?</legend>
+          <label class="option"><input type="radio" name="when" value="Next scheduled run" checked /> The next scheduled run for my area</label>
+          <label class="option"><input type="radio" name="when" value="A particular day" /> A particular day (tell us which)</label>
+          <div class="field">
+            <label class="label" for="c-day">Preferred day or time <span class="muted">(optional)</span></label>
+            <input class="input" id="c-day" name="preferred_day" placeholder="For example Tuesday morning" />
+          </div>
+          <p class="hint">Collections follow a weekly route, so we confirm the exact day for your area.</p>
+        </fieldset>
+
+        <fieldset class="card card--pad" data-step style="margin:0">
+          <legend class="h3" style="padding:0 8px">3. What are we collecting?</legend>
+          <div class="field">
+            <label class="label" for="c-qty">Roughly how many tyres?</label>
+            <input class="input" id="c-qty" name="quantity" type="number" inputmode="numeric" min="1" required />
+          </div>
+          <div class="field">
+            <label class="label" for="c-kind">Type of tyre</label>
+            <select class="input" id="c-kind" name="tyre_type">
+              <option>Truck</option><option>Bus</option><option>Earthmover</option><option>A mix</option>
+            </select>
+          </div>
+          <label class="option"><input type="checkbox" name="for_retread" value="yes" checked /> For retreading</label>
+          <label class="option"><input type="checkbox" name="for_repair" value="yes" /> For repair</label>
+          <div class="field">
+            <label class="label" for="c-notes">Sizes or anything else we should know <span class="muted">(optional)</span></label>
+            <textarea class="input" id="c-notes" name="notes" rows="2" style="min-height:80px"></textarea>
+          </div>
+        </fieldset>
+
+        <fieldset class="card card--pad" data-step style="margin:0">
+          <legend class="h3" style="padding:0 8px">4. Who do we contact?</legend>
+          <div class="field">
+            <label class="label" for="c-name">Your name</label>
+            <input class="input" id="c-name" name="name" autocomplete="name" required />
+          </div>
+          <div class="field">
+            <label class="label" for="c-company">Company or fleet</label>
+            <input class="input" id="c-company" name="company" autocomplete="organization" required />
+          </div>
+          <div class="field">
+            <label class="label" for="c-phone">Phone number</label>
+            <input class="input" id="c-phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" required pattern="[0-9 +()-]{10,}" />
+          </div>
+          <div class="field">
+            <label class="label" for="c-notify">Tell me when the batch is ready by</label>
+            <select class="input" id="c-notify" name="notify_by"><option>WhatsApp</option><option>SMS</option><option>Phone call</option></select>
+          </div>
+          <Consent id="c-consent" purpose="arrange this collection and tell me when my tyres are ready" />
+        </fieldset>
+
+        <div class="row" data-step-nav hidden>
+          <button class="btn btn--secondary" type="button" data-back style="flex:1">Back</button>
+          <button class="btn" type="button" data-next style="flex:2">Next</button>
+        </div>
+        <button class="btn btn--lg" type="submit" data-submit>Request collection</button>
+      </form>
+
+      <p class="small muted">Prefer to phone? Call <a href={site.tel.href}>{site.tel.display}</a>. If a vehicle is standing, use the breakdown line: <a href={site.roadside.href}>{site.roadside.display}</a>.</p>
+    </div>
+  </section>
+</Base>
+
+<script>
+  // Progressive enhancement: without JavaScript all four steps show as one long form.
+  const form = document.querySelector<HTMLFormElement>('[data-steps]')!;
+  const steps = [...form.querySelectorAll<HTMLElement>('[data-step]')];
+  const nav = form.querySelector<HTMLElement>('[data-step-nav]')!;
+  const back = form.querySelector<HTMLButtonElement>('[data-back]')!;
+  const next = form.querySelector<HTMLButtonElement>('[data-next]')!;
+  const submit = form.querySelector<HTMLButtonElement>('[data-submit]')!;
+  const bars = [...document.querySelectorAll<HTMLElement>('[data-progress] span')];
+  const label = document.querySelector<HTMLElement>('[data-step-label]')!;
+  let i = 0;
+  const show = (focus = false) => {
+    steps.forEach((s, n) => (s.hidden = n !== i));
+    bars.forEach((b, n) => b.classList.toggle('is-done', n <= i));
+    label.textContent = `Step ${i + 1} of ${steps.length}`;
+    nav.hidden = false;
+    back.hidden = i === 0;
+    next.hidden = i === steps.length - 1;
+    submit.hidden = i !== steps.length - 1;
+    if (focus) steps[i].querySelector<HTMLElement>('input, select, textarea')?.focus();
+  };
+  const valid = () => [...steps[i].querySelectorAll<HTMLInputElement>('input, select, textarea')].every((f) => f.reportValidity());
+  next.addEventListener('click', () => {
+    if (!valid()) return;
+    i++;
+    show(true);
+  });
+  back.addEventListener('click', () => {
+    i--;
+    show(true);
+  });
+  show();
+</script>

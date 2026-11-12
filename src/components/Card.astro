@@ -1,0 +1,25 @@
+---
+// The one card used for products, services, articles and tools.
+import Photo from './Photo.astro';
+interface Props {
+  href: string;
+  title: string;
+  text: string;
+  cta: string;
+  tag?: string;
+  code?: boolean;
+  photo?: { slot: string; alt: string; brief: string };
+  filter?: string;
+}
+const { href, title, text, cta, tag, code = false, photo, filter } = Astro.props;
+---
+
+<a class="card" href={href} data-filter={filter}>
+  {photo && <Photo slot_={photo.slot} alt={photo.alt} brief={photo.brief} ratio="16 / 9" sizes="(min-width: 900px) 25vw, 100vw" />}
+  <span class="card__body">
+    {tag && <span class="tag">{tag}</span>}
+    <span class:list={['card__title', { 'card__title--code': code }]}>{title}</span>
+    <span class="card__text">{text}</span>
+    <span class="card__cta">{cta}</span>
+  </span>
+</a>

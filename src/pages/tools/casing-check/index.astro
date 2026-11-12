@@ -1,0 +1,108 @@
+---
+import Base from '../../../layouts/Base.astro';
+import Photo from '../../../components/Photo.astro';
+import { site } from '../../../data/site';
+
+const conditions = [
+  { key: 'cords', label: 'Steel cords or fabric showing through the tread or shoulder', why: 'Once the belts are exposed they rust and the casing cannot hold a new tread.', slot: 'casing-reject-cords' },
+  { key: 'sidewall', label: 'A cut, bulge or blister in the sidewall', why: 'Sidewall damage through to the cords weakens the part of the tyre that flexes most.', slot: 'casing-reject-sidewall' },
+  { key: 'bead', label: 'A damaged, kinked or burnt bead', why: 'The bead seals the tyre to the rim. A damaged bead cannot be relied on.', slot: 'casing-reject-bead' },
+  { key: 'flat', label: 'Run flat or badly under-inflated (creased, discoloured inner liner)', why: 'Running flat breaks down the casing from the inside, even when the outside looks sound.', slot: 'casing-reject-run-flat' },
+  { key: 'separation', label: 'Tread or belt lifting away from the casing', why: 'Separation means the structure has already begun to fail.', slot: 'casing-reject-separation' },
+  { key: 'age', label: 'Deep weather cracking from age', why: 'Perished rubber will not last another tread life.', slot: 'casing-reject-cracking' },
+];
+---
+
+<Base
+  active="retreads"
+  title="Casing check: is my tyre casing retreadable?"
+  description="What makes a truck tyre casing retreadable, with the accept and reject conditions our inspectors look for. Check a casing yourself before you send it in."
+>
+  <section class="section">
+    <div class="wrap wrap--narrow stack stack--lg" data-casing>
+      <div class="stack stack--sm">
+        <p class="eyebrow">Tool</p>
+        <h1>Casing check</h1>
+        <p class="lede">A sound casing is the first thing a retread needs. Look the tyre over and tick anything you can see. Final acceptance is always by inspection at our plant.</p>
+      </div>
+
+      <div class="grid-2">
+        <div class="stack stack--sm">
+          <Photo slot_="casing-accept" alt="A retreadable casing with even wear and sound sidewalls" brief="a good casing: even wear, tread remaining, clean sidewalls" ratio="16 / 9" />
+          <p><b style="color:var(--success)">Usually accepted.</b> Even wear, some tread remaining, sound sidewalls and bead, no exposed steel.</p>
+        </div>
+        <div class="stack stack--sm">
+          <Photo slot_="casing-reject" alt="A rejected casing worn through to the steel cords" brief="a rejected casing: worn through to the steel belts" ratio="16 / 9" />
+          <p><b style="color:var(--danger)">Usually rejected.</b> Worn through to the steel, run flat, or cut in the sidewall.</p>
+        </div>
+      </div>
+
+      <fieldset class="card card--pad" style="margin:0">
+        <legend class="h3" style="padding:0 8px">Can you see any of these?</legend>
+        {
+          conditions.map((c) => (
+            <label class="check check--row" for={`cc-${c.key}`}>
+              <input type="checkbox" id={`cc-${c.key}`} data-why={c.why} data-label={c.label} />
+              <span>{c.label}</span>
+            </label>
+          ))
+        }
+      </fieldset>
+
+      <div class="status status--good" role="status" aria-live="polite" data-result>
+        <p class="status__label">Likely acceptable</p>
+        <p>Nothing ticked. Send it in with the next collection and our inspection will confirm.</p>
+      </div>
+
+      <div class="row">
+        <a class="btn" href="/collection/">Request a collection</a>
+        <a class="btn btn--secondary" href="/contact/?about=Casing%20question#quote">Ask a technician</a>
+      </div>
+
+      <div class="stack">
+        <h2>What each reject condition looks like</h2>
+        <ul class="grid-cards">
+          {
+            conditions.map((c) => (
+              <li class="card">
+                <Photo slot_={c.slot} alt={c.label} brief={`close-up showing: ${c.label.toLowerCase()}`} ratio="4 / 3" sizes="(min-width: 900px) 25vw, 100vw" />
+                <div class="card__body">
+                  <h3 class="card__title" style="font-size:1.0625rem">{c.label}</h3>
+                  <p class="card__text">{c.why}</p>
+                </div>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+
+      <div class="prose">
+        <h2>How to give a casing more lives</h2>
+        <ul>
+          <li>Check pressures cold, every week. Under-inflation is what destroys most casings.</li>
+          <li>Pull tyres for retreading with tread still on them. Do not run them to the steel.</li>
+          <li>Repair nail holes properly and promptly, before moisture reaches the belts.</li>
+          <li>Match duals for diameter and pressure.</li>
+        </ul>
+        <p>We train drivers and workshop staff in all of this. <a href="/fleet-solutions/#training">See driver and workshop training</a>, or call {site.tel.display}.</p>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<script>
+  const root = document.querySelector<HTMLElement>('[data-casing]')!;
+  const boxes = [...root.querySelectorAll<HTMLInputElement>('input[type=checkbox]')];
+  const result = root.querySelector<HTMLElement>('[data-result]')!;
+  const update = () => {
+    const ticked = boxes.filter((b) => b.checked);
+    if (!ticked.length) {
+      result.className = 'status status--good';
+      result.innerHTML = '<p class="status__label">Likely acceptable</p><p>Nothing ticked. Send it in with the next collection and our inspection will confirm.</p>';
+      return;
+    }
+    result.className = 'status status--bad';
+    result.innerHTML = `<p class="status__label">Likely to be rejected</p><ul style="padding-left:1.25em;margin:8px 0">${ticked.map((b) => `<li>${b.dataset.why}</li>`).join('')}</ul><p>Send it in anyway if you are unsure: we inspect every casing and tell you whether it can be repaired, retreaded or must be replaced.</p>`;
+  };
+  boxes.forEach((b) => b.addEventListener('change', update));
+</script>

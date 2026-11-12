@@ -1,0 +1,61 @@
+---
+import Base from '../../layouts/Base.astro';
+import Hero from '../../components/Hero.astro';
+import Band from '../../components/Band.astro';
+import { resources, resourceCategories } from '../../data/resources';
+import { site } from '../../data/site';
+---
+
+<Base
+  active="about"
+  title="Resource library: product guides, certificates and safety downloads"
+  description="Bandag product guide, Dunlop, Sumitomo and Apollo tyre ranges, Rema Tip Top repair products, fleet health and safety downloads, warranty terms and certificates."
+>
+  <Hero
+    eyebrow="Resource library"
+    title="Guides, certificates and safety downloads"
+    lede="Every document has a proper title, its file type and its size, so you know what you are downloading before you spend the data."
+  />
+
+  <section class="section">
+    <div class="wrap wrap--narrow stack stack--lg">
+      <div class="chips" role="group" aria-label="Filter documents by category" data-filter-group>
+        <button class="chip" type="button" aria-pressed="true" data-value="All">All documents</button>
+        {resourceCategories.map((c) => <button class="chip" type="button" aria-pressed="false" data-value={c}>{c}</button>)}
+      </div>
+      <ul class="stack stack--sm" data-filter-list>
+        {
+          resources.map((r) => (
+            <li data-filter={r.category}>
+              <a class="resource" href={r.href ?? `/contact/?about=${encodeURIComponent(`Please send me: ${r.title}`)}#quote`} download={r.available ? '' : undefined}>
+                <span class="resource__type" aria-hidden="true">{r.type}</span>
+                <span class="resource__main">
+                  <span class="resource__title">{r.title}</span><br />
+                  <span class="resource__meta">{r.description}</span><br />
+                  <span class="resource__meta"><b>{r.category}</b> · {r.type}{r.size ? ` · ${r.size}` : ''}</span>
+                </span>
+                <span class="resource__action">{r.available ? `Download ${r.type}` : 'Request by email'}</span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <Band tone="tint" title="Looking for something that is not here?" text="Invoices, statements and your own warranty certificates are in your fleet account. For anything else, ask.">
+    <a class="btn" href="/account/">Open my fleet account</a>
+    <a class="btn btn--secondary" href={`mailto:${site.email}`}>Email {site.email}</a>
+  </Band>
+</Base>
+
+<script>
+  const group = document.querySelector('[data-filter-group]');
+  const rows = document.querySelectorAll<HTMLElement>('[data-filter-list] [data-filter]');
+  group?.addEventListener('click', (e) => {
+    const btn = (e.target as HTMLElement).closest<HTMLButtonElement>('.chip');
+    if (!btn) return;
+    group.querySelectorAll('.chip').forEach((c) => c.setAttribute('aria-pressed', String(c === btn)));
+    rows.forEach((r) => (r.hidden = btn.dataset.value !== 'All' && r.dataset.filter !== btn.dataset.value));
+  });
+</script>

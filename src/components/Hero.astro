@@ -1,0 +1,39 @@
+---
+import Photo from './Photo.astro';
+interface Props {
+  eyebrow?: string;
+  title: string;
+  lede?: string;
+  ink?: boolean;
+  crumbs?: { label: string; href: string }[];
+  photo?: { slot: string; alt: string; brief: string; caption?: string };
+}
+const { eyebrow, title, lede, ink = false, crumbs, photo } = Astro.props;
+---
+
+<section class:list={['hero', { 'hero--ink': ink }]}>
+  <div class="wrap">
+    <div class="hero__grid">
+      <div class="hero__copy">
+        {
+          crumbs && (
+            <nav aria-label="Breadcrumb">
+              <ol class="breadcrumbs">
+                {crumbs.map((c) => (
+                  <li>
+                    <a href={c.href}>{c.label}</a>
+                  </li>
+                ))}
+              </ol>
+            </nav>
+          )
+        }
+        {eyebrow && <p class="eyebrow">{eyebrow}</p>}
+        <h1>{title}</h1>
+        {lede && <p class="lede">{lede}</p>}
+        <div class="row"><slot /></div>
+      </div>
+      {photo && <Photo slot_={photo.slot} alt={photo.alt} brief={photo.brief} caption={photo.caption} eager />}
+    </div>
+  </div>
+</section>

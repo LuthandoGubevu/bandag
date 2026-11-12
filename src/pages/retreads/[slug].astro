@@ -1,0 +1,164 @@
+---
+import Base from '../../layouts/Base.astro';
+import Card from '../../components/Card.astro';
+import Photo from '../../components/Photo.astro';
+import Band from '../../components/Band.astro';
+import { site } from '../../data/site';
+import { treads, duties, axles, type Tread } from '../../data/treads';
+
+export function getStaticPaths() {
+  return treads.map((t) => ({ params: { slug: t.slug }, props: { tread: t } }));
+}
+const { tread: t } = Astro.props as { tread: Tread };
+const axleLabel = t.axles.length === 3 ? 'All positions' : t.axles.join(' and ');
+const related = treads.filter((o) => o.slug !== t.slug && o.duties.some((d) => t.duties.includes(d))).slice(0, 3);
+const quoteHref = `/contact/?about=${encodeURIComponent(`${t.code} retread quote`)}#quote`;
+
+const product = {
+  '@context': 'https://schema.org',
+  '@type': 'Product',
+  name: `Bandag ${t.code} retread`,
+  description: `${t.summary} ${t.application}.`,
+  category: 'Commercial vehicle retreaded tyre',
+  brand: { '@type': 'Brand', name: 'Bandag' },
+  url: `${site.url}/retreads/${t.slug}/`,
+  additionalProperty: [
+    { '@type': 'PropertyValue', name: 'Axle position', value: axleLabel },
+    { '@type': 'PropertyValue', name: 'Duty profile', value: t.duties.join(', ') },
+  ],
+};
+const crumbs = {
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Retreads', item: `${site.url}/retreads/` },
+    { '@type': 'ListItem', position: 2, name: t.code, item: `${site.url}/retreads/${t.slug}/` },
+  ],
+};
+---
+
+<Base
+  active="retreads"
+  title={`Bandag ${t.code} retread: ${t.duties.join(' and ').toLowerCase()}, ${axleLabel.toLowerCase()}`}
+  description={`The Bandag ${t.code} retread tread. ${t.summary} Made in East London with a one-week turnaround and a Full Retread Life Warranty.`}
+  jsonld={[product, crumbs]}
+>
+  <section class="section">
+    <div class="wrap stack stack--lg">
+      <nav aria-label="Breadcrumb">
+        <ol class="breadcrumbs">
+          <li><a href="/retreads/">Retreads</a></li>
+          <li><a href="/retreads/#range">Application Specific treads</a></li>
+        </ol>
+      </nav>
+      <div class="split">
+        <Photo slot_={`tread-${t.slug}`} alt={`The Bandag ${t.code} tread pattern`} brief={`${t.code} tread pattern, straight on, even light`} ratio="1 / 1" eager />
+        <div class="stack">
+          <p class="eyebrow">Bandag Application Specific retread</p>
+          <h1 style="font-size:clamp(3rem,9vw,5rem)">{t.code}</h1>
+          <ul class="tags">
+            <li class="tag">{axleLabel}</li>
+            {t.duties.map((d) => <li class="tag">{d}</li>)}
+          </ul>
+          <p class="lede">{t.summary}</p>
+          <dl class="spec">
+            <div><dt>Application</dt><dd>{t.application}</dd></div>
+            <div><dt>Axle position</dt><dd>{axleLabel}</dd></div>
+            <div><dt>Duty profile</dt><dd>{t.duties.join(', ')}</dd></div>
+            <div><dt>Surface</dt><dd>{t.surface}</dd></div>
+            <div><dt>Turnaround</dt><dd>One week maximum, pickup to delivery</dd></div>
+            <div><dt>Cover</dt><dd>Full Retread Life Warranty</dd></div>
+          </dl>
+          <div class="row">
+            <a class="btn btn--lg" href={quoteHref}>Get a {t.code} quote</a>
+            <a class="btn btn--secondary" href={site.tel.href}>Call {site.tel.display}</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--surface">
+    <div class="wrap split">
+      <div class="stack">
+        <h2>Why fleets fit the {t.code}</h2>
+        <ul class="ticks">{t.strengths.map((s) => <li>{s}</li>)}</ul>
+        <p><b>Not the right choice for:</b> {t.notFor}</p>
+        <p class="muted small">Sizes, tread depths and availability for the {t.code} are in the <a href="/resources/">Bandag product guide</a>, or ask us and we will confirm for your size.</p>
+      </div>
+      <div class="card card--pad" data-fit data-axles={t.axles.join('|')} data-duties={t.duties.join('|')} data-code={t.code}>
+        <h2 class="h3">Is the {t.code} right for me?</h2>
+        <fieldset class="stack stack--sm" style="border:0;padding:0;margin:0">
+          <legend class="label" style="padding:0;margin-bottom:8px">What work does the vehicle do?</legend>
+          <div class="chips" data-fit-duty>
+            {duties.map((d) => <button class="chip" type="button" aria-pressed="false" data-value={d}>{d}</button>)}
+          </div>
+        </fieldset>
+        <fieldset class="stack stack--sm" style="border:0;padding:0;margin:0">
+          <legend class="label" style="padding:0;margin-bottom:8px">Which axle is the tyre for?</legend>
+          <div class="chips" data-fit-axle>
+            {axles.map((a) => <button class="chip" type="button" aria-pressed="false" data-value={a}>{a}</button>)}
+          </div>
+        </fieldset>
+        <div class="status" role="status" data-fit-result>
+          <p class="status__label">Your answer</p>
+          <p>Choose a duty and an axle and we will tell you whether the {t.code} fits.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap stack stack--lg">
+      <h2>Treads for similar work</h2>
+      <div class="grid-cards">
+        {
+          related.map((o) => (
+            <Card href={`/retreads/${o.slug}/`} code tag={`${o.axles.length === 3 ? 'All positions' : o.axles.join(', ')} · ${o.duties[0]}`} title={o.code} text={o.summary} cta={`View the ${o.code} tread`} />
+          ))
+        }
+      </div>
+      <a class="textlink" href="/retreads/#range">See all nine Application Specific treads</a>
+    </div>
+  </section>
+
+  <Band tone="tint" title="Not sure it is the right tread?" text="Tell us how the truck runs and a technician will confirm, usually in one phone call.">
+    <a class="btn" href={quoteHref}>Ask a technician</a>
+    <a class="btn btn--secondary" href="/tools/tyre-finder/">Use the tyre finder</a>
+  </Band>
+
+  <script type="application/json" id="all-treads" set:html={JSON.stringify(treads.map((x) => ({ code: x.code, slug: x.slug, axles: x.axles, duties: x.duties })))} />
+</Base>
+
+<script>
+  const box = document.querySelector<HTMLElement>('[data-fit]');
+  if (box) {
+    const all = JSON.parse(document.getElementById('all-treads')!.textContent!) as { code: string; slug: string; axles: string[]; duties: string[] }[];
+    const result = box.querySelector<HTMLElement>('[data-fit-result]')!;
+    const pick = { duty: '', axle: '' };
+    const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
+    const render = () => {
+      if (!pick.duty || !pick.axle) return;
+      const code = box.dataset.code!;
+      const dOk = box.dataset.duties!.split('|').includes(pick.duty);
+      const aOk = box.dataset.axles!.split('|').includes(pick.axle);
+      const others = all.filter((t) => t.code !== code && t.duties.includes(pick.duty) && t.axles.includes(pick.axle));
+      const links = others.map((t) => `<a href="/retreads/${t.slug}/">${esc(t.code)}</a>`).join(', ');
+      const where = `${pick.duty.toLowerCase()} work on the ${pick.axle.toLowerCase()} axle`;
+      result.className = 'status ' + (dOk && aOk ? 'status--good' : 'status--bad');
+      if (dOk && aOk) result.innerHTML = `<p class="status__label">Good match</p><p>The ${esc(code)} is built for ${where}. Ask for a quote and we will confirm the size.</p>`;
+      else if (others.length) result.innerHTML = `<p class="status__label">Not the best fit</p><p>For ${where}, look at ${links} instead.</p>`;
+      else result.innerHTML = `<p class="status__label">Not the best fit</p><p>For ${where} we would normally recommend a new tyre. <a href="/new-tyres-repairs/">See new tyres</a> or <a href="/contact/#quote">ask a technician</a>.</p>`;
+    };
+    (['duty', 'axle'] as const).forEach((k) => {
+      const g = box.querySelector(`[data-fit-${k}]`)!;
+      g.addEventListener('click', (e) => {
+        const b = (e.target as HTMLElement).closest<HTMLButtonElement>('.chip');
+        if (!b) return;
+        g.querySelectorAll('.chip').forEach((c) => c.setAttribute('aria-pressed', String(c === b)));
+        pick[k] = b.dataset.value!;
+        render();
+      });
+    });
+  }
+</script>

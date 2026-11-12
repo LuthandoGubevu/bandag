@@ -1,0 +1,121 @@
+---
+import Base from '../layouts/Base.astro';
+import Hero from '../components/Hero.astro';
+import Proof from '../components/Proof.astro';
+import Card from '../components/Card.astro';
+import Band from '../components/Band.astro';
+import { site, coverage } from '../data/site';
+---
+
+<Base
+  title="Bandag retreads and truck tyres in East London"
+  description="The lowest cost per kilometre for Eastern Cape fleets. Bandag retreads from our own East London factory, new tyres, repairs and 24-hour roadside assistance, back on the truck in a week."
+>
+  <Hero
+    ink
+    eyebrow="East London · Eastern Cape"
+    title="Lowest cost per kilometre. Back on the truck in a week."
+    lede="Bandag retreads, new tyres and vulcanised repairs for Eastern Cape truck, bus and mining fleets, made and stocked at our own factory in Gately."
+    photo={{ slot: 'home-hero', alt: 'A technician building a Bandag retread on the line at the Gately factory', brief: 'wide shot of the retread line with a technician at work, workshop light, Bandag branding visible', caption: 'The retread line at 7 Wells Road, Gately.' }}
+  >
+    <a class="btn btn--yellow" href="/contact/#quote">Request a quote</a>
+    <a class="btn btn--on-dark" href="/tools/cpk-calculator/">Calculate your saving</a>
+  </Hero>
+
+  <Proof />
+
+  <section class="section">
+    <div class="wrap stack stack--lg">
+      <h2>What do you need today?</h2>
+      <div class="grid-2" style="grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr))">
+        <a class="intent intent--urgent" href={site.roadside.href}>
+          <span class="intent__title">My truck is down right now</span>
+          <span class="intent__text">24-hour roadside tyre assistance. One call and a service vehicle is on its way.</span>
+          <span class="intent__go">Call {site.roadside.display}</span>
+        </a>
+        <a class="intent" href="/why-retread/">
+          <span class="intent__title">Should my fleet switch to retreads?</span>
+          <span class="intent__text">Safety, mileage and the cost per kilometre, with your own numbers.</span>
+          <span class="intent__go">See the case for retreading</span>
+        </a>
+        <a class="intent" href="/account/">
+          <span class="intent__title">I have an account</span>
+          <span class="intent__text">Casing status, the collection schedule, documents and reorders.</span>
+          <span class="intent__go">Open my fleet account</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--ink">
+    <div class="wrap wrap--narrow stack">
+      <h2>Find the right tyre</h2>
+      <form class="stack" action="/tools/tyre-finder/" method="get">
+        <label class="label" for="home-size" style="color:#fff">Tyre size, as written on the sidewall</label>
+        <div class="row">
+          <input class="input" id="home-size" name="size" inputmode="text" autocomplete="off" placeholder="For example 315/80R22.5" style="flex:1 1 240px;background:#fff;color:#0f1319;border-color:#fff" />
+          <button class="btn btn--yellow" type="submit">Find my tyre</button>
+        </div>
+      </form>
+      <a class="textlink" href="/tools/tyre-finder/">Or choose by vehicle, axle position and duty</a>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap stack stack--lg">
+      <h2>What we do</h2>
+      <div class="grid-cards">
+        <Card href="/retreads/" tag="Retreads" title="Bandag retreads" text="Nine Application Specific treads for truck and bus, built on your own casings." cta="Browse the tread range" photo={{ slot: 'card-retreads', alt: 'Finished Bandag retreads racked for delivery', brief: 'finished retreads on the rack, tread pattern clearly visible' }} />
+        <Card href="/new-tyres-repairs/" tag="New tyres" title="New tyres, all sizes" text="Apollo, Dunlop and Sumitomo, with the fast-moving commercial sizes on the shelf." cta="See new tyres" photo={{ slot: 'card-new-tyres', alt: 'New commercial tyres in the East London Bandag stockroom', brief: 'stockroom racks of new truck tyres' }} />
+        <Card href="/new-tyres-repairs/#repairs" tag="Repairs" title="Vulcanised repairs" text="Every size up to earthmover, repaired in our plant with Rema Tip Top materials." cta="See repair capability" photo={{ slot: 'card-repairs', alt: 'A technician repairing an earthmover tyre', brief: 'technician working on a large earthmover tyre repair' }} />
+        <Card href="/fleet-solutions/" tag="Fleet" title="Fleet solutions" text="Weekly collection, Bandag PSI, training and one account for every tyre you run." cta="Plan a fleet programme" photo={{ slot: 'card-fleet', alt: 'An East London Bandag delivery truck loading casings at a customer depot', brief: 'branded collection truck at a customer depot' }} />
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--surface">
+    <div class="wrap split split--center">
+      <div class="stack">
+        <p class="eyebrow">The number that decides</p>
+        <h2>A retread costs far less than a new tyre and is built to run a comparable distance</h2>
+        <p class="lede">That is why cost per kilometre, not purchase price, is how fleets compare tyres. Put in your own fleet size, prices and kilometres and see the difference in rand.</p>
+        <div class="row">
+          <a class="btn" href="/tools/cpk-calculator/">Open the cost per km calculator</a>
+          <a class="textlink" href="/why-retread/new-vs-retread-cost-per-kilometre/">How the sum works</a>
+        </div>
+      </div>
+      <div class="stack">
+        <h3>Weekly collection across the northern Eastern Cape</h3>
+        <p class="muted">Our truck collects casings and delivers finished tyres every week. Routes include:</p>
+        <ul class="tags">{coverage.map((t) => <li class="tag">{t.name}</li>)}</ul>
+        <div class="row">
+          <a class="btn btn--secondary" href="/collection/">Request a collection</a>
+          <a class="textlink" href="/about/#coverage">See the coverage map</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="wrap stack stack--lg">
+      <div class="stack stack--sm">
+        <h2>The brands we supply, and what each is for</h2>
+        <p class="lede">One retread system, three new tyre ranges and the repair materials that hold them together.</p>
+      </div>
+      <div class="table-scroll">
+        <table>
+          <thead><tr><th scope="col">Brand</th><th scope="col">What we use it for</th><th scope="col">Detail</th></tr></thead>
+          <tbody>
+            {site.brands.map((b) => <tr><th scope="row">{b.name}</th><td>{b.role}</td><td>{b.note}</td></tr>)}
+          </tbody>
+        </table>
+      </div>
+      <a class="textlink" href="/resources/">Product guides for every brand are in the resource library</a>
+    </div>
+  </section>
+
+  <Band tone="tint" title="Talk to someone who knows tyres" text="Tell us the vehicle and the route. We will tell you what to fit and what it will cost per kilometre.">
+    <a class="btn" href={site.tel.href}>Call {site.tel.display}</a>
+    <a class="btn btn--secondary" href="/contact/#quote">Request a quote</a>
+  </Band>
+</Base>

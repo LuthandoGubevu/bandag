@@ -1,0 +1,108 @@
+---
+import Base from '../../layouts/Base.astro';
+import Card from '../../components/Card.astro';
+import Certs from '../../components/Certs.astro';
+import Consent from '../../components/Consent.astro';
+
+const brand = [['--ink', 'Ink', '#0F1319'], ['--blue', 'Bandag blue', '#0B3D91'], ['--yellow', 'Bandag yellow', '#FFC20E'], ['--steel', 'Steel', '#2A313C']];
+const themed = [
+  ['--bg', 'Page background', '#F3F4F6', '#0B0E12'], ['--surface', 'Surface (cards, header)', '#FFFFFF', '#181D25'], ['--surface-2', 'Surface 2 (tags, bands)', '#E7EAEF', '#222A35'],
+  ['--text', 'Text', '#0F1319', '#F3F4F6'], ['--text-2', 'Secondary text', '#4A5563', '#AEB7C4'], ['--line', 'Borders', '#CBD1DA', '#323C49'],
+  ['--link', 'Links and outlines', '#0B3D91', '#8DB4F5'], ['--primary-bg', 'Primary button', '#0B3D91', '#FFC20E'], ['--callout', 'Callout', '#E3EBF8', '#1E2A40'],
+  ['--field-border', 'Field border', '#5B6573', '#8C96A5'], ['--success', 'Success', '#1B6B3E', '#5FD08B'], ['--danger', 'Danger', '#B3261E', '#FF8A80'],
+];
+const type = [['h1', 'Display / H1', 'clamp(34px, 6vw, 64px) · 700 · 1.02'], ['h2', 'H2', 'clamp(26px, 4vw, 38px) · 700 · 1.1'], ['h3', 'H3', '22px · 700 · 1.2'], ['lede', 'Lede', 'clamp(17px, 2vw, 20px) · 500 · 1.55'], ['', 'Body', '17px · 500 · 1.6'], ['small', 'Small', '15px · 500 · 1.5'], ['eyebrow', 'Eyebrow', '13px · 700 · caps · 0.14em']];
+const space = [4, 8, 12, 16, 24, 32, 48, 64];
+---
+
+<Base title="Design system" description="Colour, type, spacing and components for the East London Bandag website." noindex>
+  <section class="section">
+    <div class="wrap stack stack--lg">
+      <div class="stack stack--sm">
+        <p class="eyebrow">Internal reference</p>
+        <h1>Design system</h1>
+        <p class="lede">Everything the site is built from. One sans family in two weights, Bandag blue and yellow on dark neutrals, no gradients on chrome, no shadows, no glow. Switch theme in the footer to check both modes.</p>
+      </div>
+
+      <h2>Colour</h2>
+      <h3>Brand constants (same in both themes)</h3>
+      <ul class="swatches">{brand.map(([v, n, h]) => <li class="swatch"><i style={`background:var(${v})`}></i><span><b>{n}</b><br /><code>{v}</code><br />{h}</span></li>)}</ul>
+      <h3>Themed tokens (showing the current theme)</h3>
+      <ul class="swatches">{themed.map(([v, n, l, d]) => <li class="swatch"><i style={`background:var(${v})`}></i><span><b>{n}</b><br /><code>{v}</code><br />Light {l}<br />Dark {d}</span></li>)}</ul>
+      <div class="table-scroll">
+        <table>
+          <caption class="visually-hidden">Contrast ratios of the main colour pairs</caption>
+          <thead><tr><th scope="col">Pair</th><th scope="col">Light</th><th scope="col">Dark</th><th scope="col">WCAG AA</th></tr></thead>
+          <tbody>
+            <tr><th scope="row">Text on page background</th><td>16.9 : 1</td><td>17.4 : 1</td><td>Pass</td></tr>
+            <tr><th scope="row">Secondary text on surface</th><td>7.5 : 1</td><td>8.3 : 1</td><td>Pass</td></tr>
+            <tr><th scope="row">Link on surface</th><td>10.0 : 1</td><td>7.9 : 1</td><td>Pass</td></tr>
+            <tr><th scope="row">Primary button label</th><td>10.0 : 1</td><td>11.6 : 1</td><td>Pass</td></tr>
+            <tr><th scope="row">Ink on Bandag yellow (emergency bar)</th><td>11.6 : 1</td><td>11.6 : 1</td><td>Pass</td></tr>
+            <tr><th scope="row">Field border against field</th><td>5.9 : 1</td><td>6.4 : 1</td><td>Pass (3 : 1 needed)</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2>Type</h2>
+      <p class="muted">Barlow, weights 500 and 700 only. Self-hosted, Latin subset.</p>
+      <div class="stack">
+        {type.map(([c, n, s]) => <div style="border-bottom:1px solid var(--line);padding-bottom:12px"><p class={c}>{n}: back on the truck in a week</p><p class="small muted">{s}</p></div>)}
+      </div>
+
+      <h2>Spacing</h2>
+      <p class="muted">A 4 px base. Section padding is fluid: 32 to 64 px. Corner radius is 6 px throughout. Minimum tap target 48 px.</p>
+      <div class="row" style="align-items:flex-end">{space.map((s) => <div class="small" style="text-align:center"><div style={`width:${s}px;height:${s}px;background:var(--link)`}></div>{s}</div>)}</div>
+
+      <h2>Buttons</h2>
+      <div class="row">
+        <a class="btn" href="#">Primary</a>
+        <a class="btn btn--secondary" href="#">Secondary</a>
+        <a class="btn btn--yellow" href="#">Yellow</a>
+        <a class="btn btn--ink" href="#">Ink (emergency)</a>
+        <button class="btn" disabled>Disabled</button>
+        <a class="btn btn--lg" href="#">Large</a>
+      </div>
+      <div class="row" style="background:var(--ink);padding:16px;border-radius:6px">
+        <a class="btn btn--yellow" href="#">On dark: primary</a>
+        <a class="btn btn--on-dark" href="#">On dark: secondary</a>
+      </div>
+      <p class="muted small">States: hover darkens the fill, active moves 1 px, focus shows a 3 px yellow outline with an ink ring so it is visible on any background. Tab through this page to see it.</p>
+
+      <h2>Chips</h2>
+      <div class="chips"><button class="chip" aria-pressed="true">Selected</button><button class="chip" aria-pressed="false">Not selected</button><button class="chip" aria-pressed="false">Long haul</button></div>
+
+      <h2>Form fields</h2>
+      <form class="form card card--pad" onsubmit="return false" style="max-width:520px">
+        <div class="field"><label class="label" for="ds-a">Label</label><input class="input" id="ds-a" placeholder="Placeholder text" /><span class="hint">Hint text sits under the field.</span></div>
+        <div class="field"><label class="label" for="ds-b">Invalid field</label><input class="input" id="ds-b" aria-invalid="true" value="12345" /><span class="error">Enter a full phone number, 10 digits.</span></div>
+        <div class="field"><label class="label" for="ds-c">Select</label><select class="input" id="ds-c"><option>Retread quote</option></select></div>
+        <label class="option"><input type="radio" name="ds-r" checked /> Option, selected</label>
+        <label class="option"><input type="radio" name="ds-r" /> Option</label>
+        <Consent id="ds-consent" purpose="respond to this enquiry" />
+      </form>
+
+      <h2>The universal card</h2>
+      <p class="muted">One card for products, services, articles, tools and resources. Optional photo, optional tag, title, text and a call to action that says where it goes.</p>
+      <div class="grid-cards">
+        <Card href="#" tag="Drive · Long haul" code title="BDR-HT2" text="Product card with a tread code as its title." cta="View the BDR-HT2 tread" photo={{ slot: 'tread-bdr-ht2', alt: 'Tread pattern', brief: 'tread pattern' }} />
+        <Card href="#" tag="Programme" title="Service card" text="The same card without a photo." cta="How it works" />
+        <Card href="#" tag="Safety" title="Article card" text="The same card again, for an article." cta="Read the article" />
+      </div>
+
+      <h2>Certification badges</h2>
+      <Certs explain />
+
+      <h2>Status and callouts</h2>
+      <div class="grid-2">
+        <div class="status status--good"><p class="status__label">Good match</p><p>Positive result.</p></div>
+        <div class="status status--bad"><p class="status__label">Not the best fit</p><p>Negative result. Colour is never the only signal: the label says it too.</p></div>
+        <div class="callout"><b>In short:</b> a callout summarises an article.</div>
+        <div class="notice"><b>Notice.</b> For caveats such as sample data.</div>
+      </div>
+
+      <h2>The emergency bar</h2>
+      <p>The yellow bar at the top of this page. It is sticky on every page and every breakpoint, never collapses into the menu, and its call button is at least 48 px tall. On phones it shows the roadside number and the ETA national line as two tap targets; from 760 px it adds a label and a WhatsApp action.</p>
+    </div>
+  </section>
+</Base>
